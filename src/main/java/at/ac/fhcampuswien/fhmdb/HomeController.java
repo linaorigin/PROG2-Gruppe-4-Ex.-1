@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import com.jfoenix.controls.JFXButton;
@@ -12,8 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class HomeController implements Initializable {
     @FXML
@@ -45,9 +45,23 @@ public class HomeController implements Initializable {
 
         // TODO add genre filter items with genreComboBox.getItems().addAll(...)
         genreComboBox.setPromptText("Filter by Genre");
+        genreComboBox.getItems().addAll(Genres.values());
 
         // TODO add event handlers to buttons and call the regarding methods
         // either set event handlers in the fxml file (onAction) or add them here
+
+        searchBtn.setOnAction(actionEvent -> {
+            if (genreComboBox.getValue() != null) {
+                observableMovies.setAll(
+                        allMovies
+                        .stream()
+                        .filter(movie -> movie.getTitle()
+                                              .toLowerCase()
+                                              .contains(searchField.getText().toLowerCase())
+                                         & movie.getGenres().contains((Genres) genreComboBox.getValue()))
+                        .toList());
+            }
+        });
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
