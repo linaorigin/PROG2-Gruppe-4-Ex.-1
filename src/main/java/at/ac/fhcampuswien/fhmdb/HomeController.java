@@ -51,16 +51,20 @@ public class HomeController implements Initializable {
         // either set event handlers in the fxml file (onAction) or add them here
 
         searchBtn.setOnAction(actionEvent -> {
-            if (genreComboBox.getValue() != null) {
-                observableMovies.setAll(
-                        allMovies
+                List<Movie> tmp = allMovies
                         .stream()
-                        .filter(movie -> movie.getTitle()
+                        .filter(movie -> (movie.getTitle()
                                               .toLowerCase()
                                               .contains(searchField.getText().toLowerCase())
-                                         & movie.getGenres().contains((Genres) genreComboBox.getValue()))
-                        .toList());
-            }
+                                            || movie.getDescription().toLowerCase().contains(searchField.getText().toLowerCase()))
+                                         & (genreComboBox.getValue() == null
+                                            || movie.getGenres().contains((Genres) genreComboBox.getValue())))
+                        .toList();
+                if (sortBtn.getText().equals("Sort (desc)")){
+                    observableMovies.setAll(tmp.reversed());
+                } else {
+                    observableMovies.setAll(tmp);
+                }
         });
 
         // Sort button example:
@@ -68,9 +72,16 @@ public class HomeController implements Initializable {
             if(sortBtn.getText().equals("Sort (asc)")) {
                 // TODO sort observableMovies ascending
                 sortBtn.setText("Sort (desc)");
+                observableMovies.sort((m1, m2) -> {
+                    return m1.getTitle().compareTo(m2.getTitle());
+                });
+                Collections.reverse(observableMovies);
             } else {
                 // TODO sort observableMovies descending
                 sortBtn.setText("Sort (asc)");
+                observableMovies.sort((m1, m2) -> {
+                    return m1.getTitle().compareTo(m2.getTitle());
+                });
             }
         });
 
