@@ -2,6 +2,7 @@ package at.ac.fhcampuswien.fhmdb.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Movie {
     private String title;
@@ -34,5 +35,22 @@ public class Movie {
         // TODO add some dummy data here
 
         return movies;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Movie other = (Movie) obj;
+        return Objects.equals(title, other.getTitle()) && Objects.equals(genres, other.getGenres());
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(title,genres);
     }
 }
