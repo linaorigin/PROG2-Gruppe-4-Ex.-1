@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class HomeControllerTest {
 
     @Test
-    void emptySearch_returns_all_movies(){
+    void emptySearch_returns_all_movies() {
         // given
         HomeController homeController = new HomeController();
         List<Movie> movieList = Movie.initializeMovies();
@@ -21,15 +21,15 @@ class HomeControllerTest {
         Genres genre = null;
 
         // when
-        homeController.filterMovies(movieList,searchText,genre);
+        homeController.filterMovies(movieList, searchText, genre);
 
         // then
         List<Movie> expectedMovieList = Movie.initializeMovies();
-        assertEquals(expectedMovieList,movieList);
+        assertEquals(expectedMovieList, movieList);
     }
 
     @Test
-    void filterGenre_returns_only_movies_with_genre(){
+    void filterGenre_returns_only_movies_with_genre() {
         // given
         HomeController homeController = new HomeController();
         List<Movie> movieList = Movie.initializeMovies();
@@ -37,15 +37,16 @@ class HomeControllerTest {
         Genres genre = Genres.ADVENTURE;
 
         // when
-        movieList = homeController.filterMovies(movieList,searchText,genre);
+        movieList = homeController.filterMovies(movieList, searchText, genre);
 
         // then
         List<Movie> expectedMovieList = Movie.initializeMovies();
         expectedMovieList = expectedMovieList.stream().filter(m -> m.getGenres().contains(genre)).toList();
-        assertEquals(expectedMovieList,movieList);
+        assertEquals(expectedMovieList, movieList);
     }
+
     @Test
-    void upper_and_lower_case_irrelevant(){
+    void upper_and_lower_case_irrelevant() {
         //given
         HomeController homeController = new HomeController();
         List<Movie> movieListUp = Movie.initializeMovies();
@@ -55,15 +56,15 @@ class HomeControllerTest {
         Genres genre = null;
 
         //when
-        movieListUp = homeController.filterMovies(movieListUp,searchTextUp,genre);
-        movieListLow = homeController.filterMovies(movieListLow,searchTextLow,genre);
+        movieListUp = homeController.filterMovies(movieListUp, searchTextUp, genre);
+        movieListLow = homeController.filterMovies(movieListLow, searchTextLow, genre);
 
         //then
-        assertEquals(movieListLow,movieListUp);
+        assertEquals(movieListLow, movieListUp);
     }
 
     @Test
-    void ascending_and_descending_filters_work(){
+    void ascending_and_descending_filters_work() {
         //given
         HomeController homeController = new HomeController();
         List<Movie> movieListAsc = Movie.initializeMovies();
@@ -72,8 +73,8 @@ class HomeControllerTest {
         boolean asc = false;
 
         //when
-        homeController.sortMovies(movieListAsc,asc);
-        homeController.sortMovies(movieListDesc,desc);
+        homeController.sortMovies(movieListAsc, asc);
+        homeController.sortMovies(movieListDesc, desc);
 
         //then
         List<Movie> expectedAsc = Movie.initializeMovies();
@@ -85,7 +86,7 @@ class HomeControllerTest {
     }
 
     @Test
-    public void test_filter_movies_by_text_and_genre() {
+    void test_filter_movies_by_text_and_genre() {
         HomeController controller = new HomeController();
         List<Movie> allMovies = List.of(
                 new Movie("Action Movie One", "Description of the first action movie", List.of(Genres.ACTION)),
@@ -105,5 +106,18 @@ class HomeControllerTest {
         );
 
         assertEquals(expectedMovies, filteredMovies, "The filtered list should only contain movies that match both the search text and the selected genre.");
+    }
+
+    @Test
+    void test_no_movies_shown_when_filters_do_not_match() {
+        HomeController controller = new HomeController();
+        List<Movie> allMovies = Movie.initializeMovies();
+
+        String searchText = "Nonexistent Movie";
+        Genres searchGenre = Genres.SCIENCE_FICTION;
+
+        List<Movie> filteredMovies = controller.filterMovies(allMovies, searchText, searchGenre);
+
+        assertTrue(filteredMovies.isEmpty(), "No movies should be shown, when neither of the serach variables fit any movies or descriptions.");
     }
 }
