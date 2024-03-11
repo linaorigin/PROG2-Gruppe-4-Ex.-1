@@ -53,44 +53,56 @@ public class HomeController implements Initializable {
         // either set event handlers in the fxml file (onAction) or add them here
 
         searchBtn.setOnAction(actionEvent -> {
-            observableMovies.setAll(filterMovies(allMovies,searchField.getText(),(Genres) genreComboBox.getValue()));
+            observableMovies.setAll(filterMovies(allMovies, searchField.getText(), (Genres) genreComboBox.getValue()));
             sortMovies(observableMovies, sortBtn.getText().equals("Sort (desc)"));
         });
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if(sortBtn.getText().equals("Sort (asc)")) {
+            if (sortBtn.getText().equals("Sort (asc)")) {
                 // TODO sort observableMovies ascending
                 sortBtn.setText("Sort (desc)");
-                sortMovies(observableMovies,true);
+                sortMovies(observableMovies, true);
             } else {
                 // TODO sort observableMovies descending
                 sortBtn.setText("Sort (asc)");
-                sortMovies(observableMovies,false);
+                sortMovies(observableMovies, false);
             }
         });
 
 
     }
-    void sortMovies(List<Movie> listToSort, boolean reverseOrder){
+
+    void sortMovies(List<Movie> listToSort, boolean reverseOrder) {
         listToSort.sort((m1, m2) -> {
             return m1.getTitle().compareTo(m2.getTitle());
         });
-        if (reverseOrder){
+        if (reverseOrder) {
             Collections.reverse(listToSort);
         }
     }
 
-    List<Movie> filterMovies(List<Movie> listToFilter, String text, Genres genre){
-        return listToFilter.stream()
-                           .filter(movie -> (movie.getTitle()
-                                                  .toLowerCase()
-                                                  .contains(text.toLowerCase())
-                                             || movie.getDescription()
-                                                     .toLowerCase()
-                                                     .contains(text.toLowerCase()))
-                                             && (genre == null
-                                                || movie.getGenres().contains(genre)))
-                           .toList();
+    List<Movie> filterMovies(List<Movie> listToFilter, String text, Genres genre) {
+        if (genre != Genres.REMOVE_FILTER) {
+            return listToFilter.stream()
+                    .filter(movie -> (movie.getTitle()
+                            .toLowerCase()
+                            .contains(text.toLowerCase())
+                            || movie.getDescription()
+                            .toLowerCase()
+                            .contains(text.toLowerCase()))
+                            && (genre == null
+                            || movie.getGenres().contains(genre)))
+                    .toList();
+        } else {
+            return listToFilter.stream()
+                    .filter(movie -> (movie.getTitle()
+                            .toLowerCase()
+                            .contains(text.toLowerCase())
+                            || movie.getDescription()
+                            .toLowerCase()
+                            .contains(text.toLowerCase())))
+                    .toList();
+        }
     }
 }
