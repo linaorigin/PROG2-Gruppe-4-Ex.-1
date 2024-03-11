@@ -4,7 +4,9 @@ import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,7 +61,8 @@ class HomeControllerTest {
         //then
         assertEquals(movieListLow,movieListUp);
     }
-    /*@Test
+
+    @Test
     void ascending_and_descending_filters_work(){
         //given
         HomeController homeController = new HomeController();
@@ -75,5 +78,32 @@ class HomeControllerTest {
         //then
         List<Movie> expectedAsc = Movie.initializeMovies();
 
-    }*/
+        expectedAsc.sort(Comparator.comparing(Movie::getTitle));
+
+        assertEquals(expectedAsc, movieListAsc, "The list should be sorted in ascending order");
+
+    }
+
+    @Test
+    public void test_filter_movies_by_text_and_genre() {
+        HomeController controller = new HomeController();
+        List<Movie> allMovies = List.of(
+                new Movie("Action Movie One", "Description of the first action movie", List.of(Genres.ACTION)),
+                new Movie("Comedy Movie One", "This is a funny movie", List.of(Genres.COMEDY)),
+                new Movie("Action Comedy Movie", "An action movie with a twist of comedy", List.of(Genres.ACTION, Genres.COMEDY)),
+                new Movie("Drama Movie One", "A very dramatic movie", List.of(Genres.DRAMA)));
+
+
+        String searchText = "action";
+        Genres selectedGenre = Genres.COMEDY;
+
+        List<Movie> filteredMovies = controller.filterMovies(allMovies, searchText, selectedGenre);
+
+
+        List<Movie> expectedMovies = List.of(
+                new Movie("Action Comedy Movie", "An action movie with a twist of comedy", (List<Genres>) List.of(Genres.ACTION, Genres.COMEDY))
+        );
+
+        assertEquals(expectedMovies, filteredMovies, "The filtered list should only contain movies that match both the search text and the selected genre.");
+    }
 }
