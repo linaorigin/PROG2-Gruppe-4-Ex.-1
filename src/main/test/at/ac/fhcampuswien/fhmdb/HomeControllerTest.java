@@ -86,7 +86,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void test_filter_movies_by_text_and_genre() {
+    void filter_movies_by_text_and_genre() {
         HomeController controller = new HomeController();
         List<Movie> allMovies = List.of(
                 new Movie("Action Movie One", "Description of the first action movie", List.of(Genres.ACTION)),
@@ -109,7 +109,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void test_no_movies_shown_when_filters_do_not_match() {
+    void no_movies_shown_when_filters_do_not_match() {
         HomeController controller = new HomeController();
         List<Movie> allMovies = Movie.initializeMovies();
 
