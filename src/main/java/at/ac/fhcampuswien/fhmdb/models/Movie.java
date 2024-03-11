@@ -35,6 +35,11 @@ public class Movie {
         movies.add(new Movie("Spider-Man: Across the Spider-Verse", "Miles Morales kehrt im 2. Teil der Spider-Verse-Saga zurück, reist durch das Multiversum und trifft auf ein Team von Spider-People. Uneinig über den Umgang mit einer neuen Bedrohung definiert Miles neu, was es bedeutet, ein Held zu sein. 2023, 2h20m, PG-12", List.of(Genres.ANIMATION, Genres.ACTION, Genres.ADVENTURE)));
         movies.add(new Movie("Alles steht Kopf", "Die junge Riley wird plötzlich aus ihrem Leben im mittleren Westen gerissen, als Sie nach San Francisco umziehen muss. Ihre Emotionen - Freude, Angst, Wut, Abscheu und Traurigkeit - stehen dabei im Konflikt mit der Erkundung einer neuen Umgebung. 2015, 1h35m", List.of(Genres.ANIMATION, Genres.ADVENTURE, Genres.COMEDY)));
         movies.add(new Movie("The Iron Claw", "Die wahre Geschichte der unzertrennlichen Von Erich-Brüder, die in den frühen 1980er Jahren in der hart umkämpften Welt des professionellen Wrestlings Geschichte schrieben. 2023, 2h12m, PG-12", List.of(Genres.BIOGRAPHY, Genres.DRAMA, Genres.SPORT)));
+        movies.add(new Movie("Nightmare Before Christmas","Jack Skellington, der König von Halloween Town, entdeckt Christmas Town, ohne jedoch genau deren Konzept zu verstehen. 1993, 1h16m, PG-6", List.of(Genres.ANIMATION, Genres.FAMILY, Genres.FANTASY)));
+        movies.add(new Movie("Vielleicht lieber morgen","Ein introvertierter Neuling an der High School wird von zwei älteren Schülern unter ihre Fittiche genommen, die ihn in der wirklichen Welt willkommen heißen. 2012, 1h43m, PG-12", List.of(Genres.DRAMA)));
+        movies.add(new Movie("Chihiros Reise ins Zauberland","Während ihre Familie in die Vorstadt zieht, durchstreift ein missmutiges 10-jähriges Mädchen eine Welt, die von Göttern, Hexen und Geistern regiert wird, und in der sich Menschen in Bestien verwandeln. 2001, 2h5m, PG-0",List.of(Genres.ANIMATION, Genres.FAMILY, Genres.ADVENTURE)));
+
+
         // TODO add some dummy data here
 
         return movies;
