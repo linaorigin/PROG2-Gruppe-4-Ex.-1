@@ -149,4 +149,19 @@ class HomeControllerTest {
 
         assertTrue(filteredMovies.isEmpty(), "No movies should be shown, when neither of the search variables fit any movies or descriptions.");
     }
+
+    /*@Test
+    void are_filters_removable() {
+        HomeController controller = new HomeController();
+        List<Movie> originalList = Movie.initializeMovies();
+        List<Movie> filteredList = controller.filterMovies(new ArrayList<>(originalList), "", Genres.ACTION); // Filter by genre
+        Genres removeFilters = Genres.REMOVE_FILTER;
+
+        filteredList = controller.filterMovies(filteredList, "", removeFilters); // Attempt to remove filters
+
+        // Comparing the lists
+        assertEquals(originalList.size(), filteredList.size(), "The lists should have the same size after removing the filters.");
+        assertTrue(originalList.containsAll(filteredList) && filteredList.containsAll(originalList), "The movie lists should be equal after removing the filters.");
+    }*/
+
 }
