@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Movie {
-    private String title;
-    private String description;
-    private List<Genres> genres;
+    private final String title;
+    private final String description;
+    private final List<Genres> genres;
 
     public Movie(String title, String description, List<Genres> genres) {
         this.title = title;
@@ -44,7 +44,7 @@ public class Movie {
 
         return movies;
     }
-
+/*
     @Override
     public boolean equals(Object obj){
         if (this == obj)
@@ -61,4 +61,5 @@ public class Movie {
     public int hashCode(){
         return Objects.hash(title,genres);
     }
+*/
 }

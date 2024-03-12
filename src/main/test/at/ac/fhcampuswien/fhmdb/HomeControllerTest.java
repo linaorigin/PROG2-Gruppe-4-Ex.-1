@@ -2,55 +2,83 @@ package at.ac.fhcampuswien.fhmdb;
 
 import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class HomeControllerTest {
+    List<Movie> movieList;
+
+    @BeforeEach
+    void init_movieList_for_testing(){
+        movieList = Movie.initializeMovies();
+    }
 
     @Test
     void emptySearch_returns_all_movies() {
         // given
         HomeController homeController = new HomeController();
-        List<Movie> movieList = Movie.initializeMovies();
         String searchText = "";
         Genres genre = null;
 
         // when
-        homeController.filterMovies(movieList, searchText, genre);
+        List<Movie> actualMovieList = homeController.filterMovies(movieList,searchText,genre);
 
         // then
-        List<Movie> expectedMovieList = Movie.initializeMovies();
-        assertEquals(expectedMovieList, movieList);
+        assertIterableEquals(actualMovieList,movieList);
     }
 
     @Test
     void filterGenre_returns_only_movies_with_genre() {
         // given
         HomeController homeController = new HomeController();
-        List<Movie> movieList = Movie.initializeMovies();
+        List<Movie> actualMovieList;
         String searchText = "";
         Genres genre = Genres.ADVENTURE;
 
         // when
-        movieList = homeController.filterMovies(movieList, searchText, genre);
+        actualMovieList = homeController.filterMovies(movieList, searchText, genre);
 
         // then
-        List<Movie> expectedMovieList = Movie.initializeMovies();
-        expectedMovieList = expectedMovieList.stream().filter(m -> m.getGenres().contains(genre)).toList();
-        assertEquals(expectedMovieList, movieList);
+        List<Movie> expectedMovieList = movieList.stream()
+                                                 .filter(m -> m.getGenres()
+                                                               .contains(genre))
+                                                 .toList();
+        assertIterableEquals(expectedMovieList, actualMovieList);
+    }
+
+    @Test
+    void filterText_returns_movies_with_matching_text_in_title_and_description() {
+        // given
+        HomeController homeController = new HomeController();
+        List<Movie> actualMovieList;
+        String searchText = "un";
+        Genres genre = null;
+
+        // when
+        actualMovieList = homeController.filterMovies(movieList, searchText, genre);
+
+        // then
+        List<Movie> expectedMovieList = movieList.stream()
+                                                 .filter(m -> m.getTitle()
+                                                               .contains(searchText) ||
+                                                              m.getDescription()
+                                                               .contains(searchText))
+                                                 .toList();
+        assertIterableEquals(expectedMovieList, actualMovieList);
     }
 
     @Test
     void upper_and_lower_case_irrelevant() {
         //given
         HomeController homeController = new HomeController();
-        List<Movie> movieListUp = Movie.initializeMovies();
-        List<Movie> movieListLow = Movie.initializeMovies();
+        List<Movie> movieListUp = movieList;
+        List<Movie> movieListLow = movieList;
         String searchTextUp = "Da";
         String searchTextLow = "da";
         Genres genre = null;
@@ -67,22 +95,26 @@ class HomeControllerTest {
     void ascending_and_descending_filters_work() {
         //given
         HomeController homeController = new HomeController();
-        List<Movie> movieListAsc = Movie.initializeMovies();
-        List<Movie> movieListDesc = Movie.initializeMovies();
+        List<Movie> movieListAsc;
+        List<Movie> movieListDesc;
         boolean desc = true;
         boolean asc = false;
 
         //when
-        homeController.sortMovies(movieListAsc, asc);
-        homeController.sortMovies(movieListDesc, desc);
+        movieListAsc = homeController.sortMovies(movieList, asc);
+        movieListDesc = homeController.sortMovies(movieList, desc);
 
         //then
-        List<Movie> expectedAsc = Movie.initializeMovies();
+        List<Movie> expectedAsc = new ArrayList<>(movieList);
+        List<Movie> expectedDesc = new ArrayList<>(movieList);
 
         expectedAsc.sort(Comparator.comparing(Movie::getTitle));
+        expectedDesc.sort(Comparator.comparing(Movie::getTitle).reversed());
 
-        assertEquals(expectedAsc, movieListAsc, "The list should be sorted in ascending order");
-
+        assertAll(
+                () -> assertEquals(expectedAsc, movieListAsc, "The list should be sorted in ascending order"),
+                () -> assertEquals(expectedDesc, movieListDesc, "The list should be sorted in descending order")
+                );
     }
 
     @Test
@@ -100,10 +132,7 @@ class HomeControllerTest {
 
         List<Movie> filteredMovies = controller.filterMovies(allMovies, searchText, selectedGenre);
 
-
-        List<Movie> expectedMovies = List.of(
-                new Movie("Action Comedy Movie", "An action movie with a twist of comedy", (List<Genres>) List.of(Genres.ACTION, Genres.COMEDY))
-        );
+        List<Movie> expectedMovies = List.of(allMovies.get(2));
 
         assertEquals(expectedMovies, filteredMovies, "The filtered list should only contain movies that match both the search text and the selected genre.");
     }
@@ -118,6 +147,6 @@ class HomeControllerTest {
 
         List<Movie> filteredMovies = controller.filterMovies(allMovies, searchText, searchGenre);
 
-        assertTrue(filteredMovies.isEmpty(), "No movies should be shown, when neither of the serach variables fit any movies or descriptions.");
+        assertTrue(filteredMovies.isEmpty(), "No movies should be shown, when neither of the search variables fit any movies or descriptions.");
     }
 }
