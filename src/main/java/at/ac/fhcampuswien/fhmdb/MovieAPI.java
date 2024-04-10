@@ -8,6 +8,7 @@ import okhttp3.Request;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,17 +16,17 @@ public class MovieAPI {
     private static final OkHttpClient client = new OkHttpClient();
     static ObjectMapper mapper = new ObjectMapper();
 
-    public static List<Movie> getMovies(String userinput, Genres genre, String releaseYear, String ratingFrom) {
+    public static List<Movie> getMovies(String userInput, Genres genre, String releaseYear, String ratingFrom) {
         HttpUrl url = HttpUrl.parse("https://prog2.fh-campuswien.ac.at/movies");
 
-        String query = (userinput != null ? "query=" + userinput : "") +
+        String query = ((!Objects.equals(userInput, "") && userInput != null) ? "query=" + userInput : "") +
                        (genre != null ? "genre=" + genre : "") +
                        (releaseYear != null ? "releaseYear=" + releaseYear : "") +
                        (ratingFrom != null ? "ratingFrom=" + ratingFrom : "");
         if (!query.isEmpty()) {
-            url.newBuilder()
-               .query(query)
-               .build();
+            url = url.newBuilder()
+                     .query(query)
+                     .build();
         }
 
         Request request = new Request.Builder()
@@ -38,9 +39,9 @@ public class MovieAPI {
                                        .execute()) {
             if (!response.isSuccessful()) {
                 System.out.println("req head: " + request.headers());
-                System.out.println("req body: " + request.toString());
+                System.out.println("req body: " + request);
                 System.out.println("res head: " + response.headers());
-                System.out.println("res body: " + response.toString());
+                System.out.println("res body: " + response);
                 throw new IOException("Unexpected code " + response);
             }
             movies = mapper.readValue(response.body()
@@ -63,9 +64,9 @@ public class MovieAPI {
                                        .execute()) {
             if (!response.isSuccessful()) {
                 System.out.println("req head: " + request.headers());
-                System.out.println("req body: " + request.toString());
+                System.out.println("req body: " + request);
                 System.out.println("res head: " + response.headers());
-                System.out.println("res body: " + response.toString());
+                System.out.println("res body: " + response);
                 throw new IOException("Unexpected code " + response);
             }
 

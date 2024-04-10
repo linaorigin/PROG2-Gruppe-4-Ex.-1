@@ -17,11 +17,10 @@ public class Movie {
     private final String imgUrl;
     private final int lengthInMinutes;
 
-    private final List <String> directors;
-    private final String[] writers;
-    private final List <String> mainCast;
-    private final int rating;
-
+    private final List<String> directors;
+    private final List<String> writers;
+    private final List<String> mainCast;
+    private final float rating;
 
 
     @JsonCreator
@@ -33,9 +32,9 @@ public class Movie {
                  @JsonProperty("imgUrl") String imgUrl,
                  @JsonProperty("lengthInMinutes") int lengthInMinutes,
                  @JsonProperty("directors") List<String> directors,
-                 @JsonProperty("writers") String[] writers,
+                 @JsonProperty("writers") List<String> writers,
                  @JsonProperty("mainCast") List<String> mainCast,
-                 @JsonProperty("rating") int rating) {
+                 @JsonProperty("rating") float rating) {
         this.id = id;
         this.title = title;
         this.genres = genres;
@@ -48,13 +47,7 @@ public class Movie {
         this.mainCast = mainCast;
         this.rating = rating;
     }
-/*
-    public Movie(String title, String description, List<Genres> genres) {
-        this.title = title;
-        this.description = description;
-        this.genres = genres;
-    }
-*/
+
     public String getTitle() {
         return title;
     }
@@ -67,17 +60,23 @@ public class Movie {
         return genres;
     }
 
-    public List<String> getMainCast() {
-        return mainCast;
-    }
-    public List <String> getDirectors() {
-        return directors;
-    }
-    public int getReleaseYear(){
+    public int getReleaseYear() {
         return releaseYear;
     }
 
-    public static List<Movie> initializeMovies(){
+    public float getRating() {
+        return rating;
+    }
+
+    public List<String> getMainCast() {
+        return mainCast;
+    }
+
+    public List<String> getDirectors() {
+        return directors;
+    }
+
+    public static List<Movie> initializeMovies() {
         List<Movie> movies = new ArrayList<>();
         /*
         movies.add(new Movie("Damsel", "Eine pflichtbewusste Jungfrau willigt ein, einen gut aussehenden Prinzen zu heiraten, und muss feststellen, dass die königliche Familie sie als Opfer rekrutiert hat, um eine alte Schuld zu begleichen. 2024, 1h48m, PG-13", List.of(Genres.ACTION, Genres.FANTASY, Genres.ADVENTURE)));
