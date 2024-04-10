@@ -98,7 +98,7 @@ public class HomeController implements Initializable {
                         || movie.getGenres().contains(genre)))
                 .toList();
     }
-    private String getMostPopularActor(List<Movie> movies){
+     String getMostPopularActor(List<Movie> movies){
         Map<String, Long> mainCastCount = movies.stream()
                 .flatMap(movie -> movie.getMainCast().stream())
                 .collect(Collectors.groupingBy(
@@ -111,17 +111,17 @@ public class HomeController implements Initializable {
         return mostCommonCastMember.getKey();
     }
 
-    private int getLongestMovieTitle(List<Movie> movies){
+     int getLongestMovieTitle(List<Movie> movies){
     return movies.stream()
             .map(movie -> movie.getTitle().length())
             .max(Integer::compare).get();
     }
-    private long countMoviesFrom(List<Movie> movies, String director){
+     long countMoviesFrom(List<Movie> movies, String director){
         return (int) movies.stream()
                 .filter(movie -> movie.getDirectors().contains(director))
                 .count();
     }
-    private List<Movie> getMoviesBetweenYears(List<Movie> movies,int startYear,int endYear){
+     List<Movie> getMoviesBetweenYears(List<Movie> movies,int startYear,int endYear){
         return movies.stream()
                 .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear()<=endYear)
                 .collect(Collectors.toList());

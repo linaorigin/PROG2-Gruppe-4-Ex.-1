@@ -161,5 +161,60 @@ class HomeControllerTest {
         assertEquals(movieList.size(), filteredList.size(), "The lists should have the same size after removing the filters.");
         assertTrue(movieList.containsAll(filteredList) && filteredList.containsAll(movieList), "The movie lists should be equal after removing the filters.");
     }
+    @Test
+    void doesMostPopularActorWork() {
+        HomeController controller = new HomeController();
+
+        List<Movie> testMovies = List.of(
+                new Movie("fakeId1", "Insanely good horror movie",List.of(Genres.HORROR),2000,"SO good, wow, insane","test00",2,List.of("insanelyGoodDirector"), List.of("goodWriter").toArray(new String[0]),List.of("superGoodActor"),10),
+                new Movie("fakeId2", "Insanely good horror movie2 ",List.of(Genres.HORROR),2000,"SO good, wow, insane, truly incredible","test01",3,List.of("insanelyGoodDirector"), List.of("goodWriter and mediumWriters").toArray(new String[0]),List.of("superGoodActor","mediumActor"),10)
+        );
+
+        String filteredActor = controller.getMostPopularActor(testMovies);
+        assertTrue(filteredActor.equals("superGoodActor"));
+    }
+    @Test
+    void doesItReturnLongestMovieTitle(){
+        HomeController controller = new HomeController();
+        String longestTitleTest = "Insanely good and very long horror movie";
+
+        List<Movie> testMovies = List.of(
+                new Movie("fakeId1", "Insanely good horror movie",List.of(Genres.HORROR),2000,"SO good, wow, insane","test00",2,List.of("insanelyGoodDirector"), List.of("goodWriter").toArray(new String[0]),List.of("superGoodActor"),10),
+                new Movie("fakeId2", "Insanely good and very long horror movie",List.of(Genres.HORROR),2000,"SO good, wow, insane, truly incredible","test01",3,List.of("insanelyGoodDirector"), List.of("goodWriter and mediumWriters").toArray(new String[0]),List.of("superGoodActor","mediumActor"),10)
+        );
+        int longestTitle = controller.getLongestMovieTitle(testMovies);
+        int longestTitleTestCount = longestTitleTest.length();
+
+        assertTrue(longestTitle == longestTitleTestCount);
+    }
+    @Test
+    void testMoviesFromDirector(){
+        HomeController controller = new HomeController();
+        long numberOfMoviesTest = 2;
+
+        List<Movie> testMovies = List.of(
+                new Movie("fakeId1", "Insanely good horror movie",List.of(Genres.HORROR),2000,"SO good, wow, insane","test00",2,List.of("insanelyGoodDirector"), List.of("goodWriter").toArray(new String[0]),List.of("superGoodActor"),10),
+                new Movie("fakeId2", "Insanely good and very long horror movie",List.of(Genres.HORROR),2000,"SO good, wow, insane, truly incredible","test02",3,List.of("insanelyGoodDirector"), List.of("goodWriter and mediumWriters").toArray(new String[0]),List.of("superGoodActor","mediumActor"),10),
+                new Movie("fakeId3", "Insanely good and very long horror movie 2 ",List.of(Genres.HORROR),2002,"SO good, wow, insane, truly incredible, i cant believe it ","test03",3,List.of("mediumDirector"), List.of("mediumWriters").toArray(new String[0]),List.of("mediumActor"),3)
+        );
+        long numberOfMovies = controller.countMoviesFrom(testMovies,"insanelyGoodDirector");
+        assertTrue(numberOfMoviesTest == numberOfMovies);
+    }
+    @Test
+    void testMoviesBetween(){
+        HomeController controller = new HomeController();
+
+        List<Movie> testMovies = List.of(
+                new Movie("fakeId1", "Insanely good horror movie",List.of(Genres.HORROR),1990,"SO good, wow, insane","test00",2,List.of("insanelyGoodDirector"), List.of("goodWriter").toArray(new String[0]),List.of("superGoodActor"),10),
+                new Movie("fakeId2", "Insanely good and very long horror movie",List.of(Genres.HORROR),2000,"SO good, wow, insane, truly incredible","test02",3,List.of("insanelyGoodDirector"), List.of("goodWriter and mediumWriters").toArray(new String[0]),List.of("superGoodActor","mediumActor"),10),
+                new Movie("fakeId3", "Insanely good and very long horror movie 2 ",List.of(Genres.HORROR),2002,"SO good, wow, insane, truly incredible, i cant believe it ","test03",3,List.of("mediumDirector"), List.of("mediumWriters").toArray(new String[0]),List.of("mediumActor"),3)
+        );
+
+        List<Movie> filteredList = controller.getMoviesBetweenYears(testMovies,1990,2000);
+        List<Movie> expectedList = List.of(testMovies.get(0),testMovies.get(1));
+
+        assertTrue(filteredList.equals(expectedList));
+
+    }
 
 }
