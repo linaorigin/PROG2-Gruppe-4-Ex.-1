@@ -1,20 +1,57 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Movie {
-    private final String title;
-    private final String description;
-    private final List<Genres> genres;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class Movie {
+    private final String id;
+    private final String title;
+    private final List<Genres> genres;
+    private final int releaseYear;
+    private final String description;
+    private final String imgUrl;
+    private final int lengthInMinutes;
+    private final String[] directors;
+    private final String[] writers;
+    private final String[] mainCast;
+    private final int rating;
+
+    @JsonCreator
+    public Movie(@JsonProperty("id") String id,
+                 @JsonProperty("title") String title,
+                 @JsonProperty("genres") List<Genres> genres,
+                 @JsonProperty("releaseYear") int releaseYear,
+                 @JsonProperty("description") String description,
+                 @JsonProperty("imgUrl") String imgUrl,
+                 @JsonProperty("lengthInMinutes") int lengthInMinutes,
+                 @JsonProperty("directors") String[] directors,
+                 @JsonProperty("writers") String[] writers,
+                 @JsonProperty("mainCast") String[] mainCast,
+                 @JsonProperty("rating") int rating) {
+        this.id = id;
+        this.title = title;
+        this.genres = genres;
+        this.releaseYear = releaseYear;
+        this.description = description;
+        this.imgUrl = imgUrl;
+        this.lengthInMinutes = lengthInMinutes;
+        this.directors = directors;
+        this.writers = writers;
+        this.mainCast = mainCast;
+        this.rating = rating;
+    }
+/*
     public Movie(String title, String description, List<Genres> genres) {
         this.title = title;
         this.description = description;
         this.genres = genres;
     }
-
+*/
     public String getTitle() {
         return title;
     }
@@ -29,6 +66,7 @@ public class Movie {
 
     public static List<Movie> initializeMovies(){
         List<Movie> movies = new ArrayList<>();
+        /*
         movies.add(new Movie("Damsel", "Eine pflichtbewusste Jungfrau willigt ein, einen gut aussehenden Prinzen zu heiraten, und muss feststellen, dass die königliche Familie sie als Opfer rekrutiert hat, um eine alte Schuld zu begleichen. 2024, 1h48m, PG-13", List.of(Genres.ACTION, Genres.FANTASY, Genres.ADVENTURE)));
         movies.add(new Movie("The Creator", "Ein postapokalyptischer Thriller über eine Zukunft, die von einem Krieg zwischen Menschen und KI geprägt ist. 2023, 2h 13m, PG-12", List.of(Genres.ACTION, Genres.THRILLER)));
         movies.add(new Movie("Deadpool", "Ein früherer Special-Forces-Soldat, der zu einem Söldner geworden ist, wird einem verbotenen Experiment unterworfen, nach dem er die Kraft der beschleunigten Heilung erhält und fortan als Deadpool auftritt. 2016, 1h 48m, PG-16", List.of(Genres.ACTION, Genres.COMEDY, Genres.FANTASY)));
@@ -41,7 +79,7 @@ public class Movie {
 
 
         // TODO add some dummy data here
-
+*/
         return movies;
     }
 /*
