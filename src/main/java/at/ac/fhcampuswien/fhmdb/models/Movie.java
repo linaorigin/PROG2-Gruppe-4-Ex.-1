@@ -16,10 +16,13 @@ public class Movie {
     private final String description;
     private final String imgUrl;
     private final int lengthInMinutes;
-    private final String[] directors;
+
+    private final List <String> directors;
     private final String[] writers;
-    private final String[] mainCast;
+    private final List <String> mainCast;
     private final int rating;
+
+
 
     @JsonCreator
     public Movie(@JsonProperty("id") String id,
@@ -29,9 +32,9 @@ public class Movie {
                  @JsonProperty("description") String description,
                  @JsonProperty("imgUrl") String imgUrl,
                  @JsonProperty("lengthInMinutes") int lengthInMinutes,
-                 @JsonProperty("directors") String[] directors,
+                 @JsonProperty("directors") List<String> directors,
                  @JsonProperty("writers") String[] writers,
-                 @JsonProperty("mainCast") String[] mainCast,
+                 @JsonProperty("mainCast") List<String> mainCast,
                  @JsonProperty("rating") int rating) {
         this.id = id;
         this.title = title;
@@ -62,6 +65,16 @@ public class Movie {
 
     public List<Genres> getGenres() {
         return genres;
+    }
+
+    public List<String> getMainCast() {
+        return mainCast;
+    }
+    public List <String> getDirectors() {
+        return directors;
+    }
+    public int getReleaseYear(){
+        return releaseYear;
     }
 
     public static List<Movie> initializeMovies(){

@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
     @FXML
@@ -96,5 +97,33 @@ public class HomeController implements Initializable {
                         || genre == Genres.REMOVE_FILTER
                         || movie.getGenres().contains(genre)))
                 .toList();
+    }
+    private String getMostPopularActor(List<Movie> movies){
+        Map<String, Long> mainCastCount = movies.stream()
+                .flatMap(movie -> movie.getMainCast().stream())
+                .collect(Collectors.groupingBy(
+                        castMember -> castMember,
+                        Collectors.counting()
+                ));
+        Map.Entry<String,Long> mostCommonCastMember = mainCastCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .orElse(null);
+        return mostCommonCastMember.getKey();
+    }
+
+    private int getLongestMovieTitle(List<Movie> movies){
+    return movies.stream()
+            .map(movie -> movie.getTitle().length())
+            .max(Integer::compare).get();
+    }
+    private long countMoviesFrom(List<Movie> movies, String director){
+        return (int) movies.stream()
+                .filter(movie -> movie.getDirectors().contains(director))
+                .count();
+    }
+    private List<Movie> getMoviesBetweenYears(List<Movie> movies,int startYear,int endYear){
+        return movies.stream()
+                .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear()<=endYear)
+                .collect(Collectors.toList());
     }
 }
