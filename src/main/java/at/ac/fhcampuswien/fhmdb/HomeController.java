@@ -55,23 +55,52 @@ public class HomeController implements Initializable {
         sortMovies(observableMovies, sortBtn.getText().equals("Sort (desc)"));
 
         genreComboBox.setPromptText("Filter by Genre");
-        genreComboBox.getItems().addAll(Genres.values());
+        genreComboBox.getItems()
+                     .addAll(Genres.values());
+        genreComboBox.getItems()
+                     .add(0, "");
 
+        releaseYearComboBox.getItems()
+                           .addAll(allMovies.stream()
+                                            .sorted(Comparator.comparing(Movie::getReleaseYear)
+                                                              .reversed())
+                                            .map(movie -> String.valueOf(movie.getReleaseYear()))
+                                            .distinct()
+                                            .toList());
         releaseYearComboBox.setPromptText("Release year");
         releaseYearComboBox.getItems()
-                           .addAll(allMovies.stream().sorted(Comparator.comparing(Movie::getReleaseYear).reversed())
-                                            .map(movie -> String.valueOf(movie.getReleaseYear()))
-                                            .distinct().toList());
+                           .add(0, "");
 
+
+        ratingComboBox.getItems()
+                      .addAll(IntStream.rangeClosed(1, 9)
+                                       .boxed()
+                                       .sorted(Collections.reverseOrder())
+                                       .map(String::valueOf)
+                                       .toList());
         ratingComboBox.setPromptText("Min Rating");
         ratingComboBox.getItems()
-                      .addAll(IntStream.rangeClosed(1, 9).boxed().sorted(Collections.reverseOrder())
-                                       .map(num -> String.valueOf(num)).toList());
+                      .add(0, "");
 
 
         searchBtn.setOnAction(actionEvent -> {
-            observableMovies.setAll(filterMovies(allMovies, searchField.getText(), (Genres) genreComboBox.getValue(), (String) releaseYearComboBox.getValue(), (String) ratingComboBox.getValue()));
-            observableMovies.setAll(sortMovies(observableMovies, sortBtn.getText().equals("Sort (desc)")));
+            observableMovies.setAll(filterMovies(allMovies,
+                                                 (!Objects.equals(searchField.getText(), "") ?
+                                                         searchField.getText() :
+                                                         null),
+                                                 (genreComboBox.getValue() != "" ?
+                                                         (Genres) genreComboBox.getValue() :
+                                                         null),
+                                                 (!Objects.equals(releaseYearComboBox.getValue(), "") ?
+                                                         releaseYearComboBox.getValue() :
+                                                         null),
+                                                 (!Objects.equals(ratingComboBox.getValue(), "") ?
+                                                         ratingComboBox.getValue() :
+                                                         null)
+            ));
+            observableMovies.setAll(sortMovies(observableMovies,
+                                               sortBtn.getText()
+                                                      .equals("Sort (desc)")));
         });
 
         // Sort button example:
