@@ -25,21 +25,21 @@ public class HomeController implements Initializable {
     public TextField searchField;
 
     @FXML
-    public JFXListView movieListView;
+    public JFXListView<Movie> movieListView;
 
     @FXML
     public JFXComboBox genreComboBox;
 
     @FXML
-    public JFXComboBox releaseYearComboBox;
+    public JFXComboBox<String> releaseYearComboBox;
 
     @FXML
-    public JFXComboBox ratingComboBox;
+    public JFXComboBox<String> ratingComboBox;
 
     @FXML
     public JFXButton sortBtn;
 
-    public List<Movie> allMovies = MovieAPI.getMovies(null, null, null, null);
+    public List<Movie> allMovies = Movie.initializeMovies();
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
@@ -52,7 +52,11 @@ public class HomeController implements Initializable {
         movieListView.setItems(observableMovies);   // set data of observable list to list view
         movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
 
-        sortMovies(observableMovies, sortBtn.getText().equals("Sort (desc)"));
+        // sort list as it instances unsorted
+        observableMovies.setAll(sortMovies(observableMovies,
+                                           sortBtn.getText()
+                                                  .equals("Sort (desc)")));
+
 
         genreComboBox.setPromptText("Filter by Genre");
         genreComboBox.getItems()
@@ -105,7 +109,8 @@ public class HomeController implements Initializable {
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if (sortBtn.getText().equals("Sort (asc)")) {
+            if (sortBtn.getText()
+                       .equals("Sort (asc)")) {
                 sortBtn.setText("Sort (desc)");
                 observableMovies.setAll(sortMovies(observableMovies, true));
             } else {
@@ -133,6 +138,7 @@ public class HomeController implements Initializable {
         return MovieAPI.getMovies(text, genre, releaseYear, rating);
     }
 
+    // local filtering
     /*
         List<Movie> filterMovies(List<Movie> listToFilter, String text, Genres genre, int releaseYear, float rating) {
             return listToFilter.stream()
@@ -153,32 +159,37 @@ public class HomeController implements Initializable {
         }
 
      */
-    private String getMostPopularActor(List<Movie> movies) {
+    String getMostPopularActor(List<Movie> movies) {
         Map<String, Long> mainCastCount = movies.stream()
-                                                .flatMap(movie -> movie.getMainCast().stream())
+                                                .flatMap(movie -> movie.getMainCast()
+                                                                       .stream())
                                                 .collect(Collectors.groupingBy(
                                                         castMember -> castMember,
                                                         Collectors.counting()
                                                 ));
-        Map.Entry<String, Long> mostCommonCastMember = mainCastCount.entrySet().stream()
+        Map.Entry<String, Long> mostCommonCastMember = mainCastCount.entrySet()
+                                                                    .stream()
                                                                     .max(Map.Entry.comparingByValue())
                                                                     .orElse(null);
         return mostCommonCastMember.getKey();
     }
 
-    private int getLongestMovieTitle(List<Movie> movies) {
+    int getLongestMovieTitle(List<Movie> movies) {
         return movies.stream()
-                     .map(movie -> movie.getTitle().length())
-                     .max(Integer::compare).get();
+                     .map(movie -> movie.getTitle()
+                                        .length())
+                     .max(Integer::compare)
+                     .orElse(0);
     }
 
-    private long countMoviesFrom(List<Movie> movies, String director) {
+    long countMoviesFrom(List<Movie> movies, String director) {
         return (int) movies.stream()
-                           .filter(movie -> movie.getDirectors().contains(director))
+                           .filter(movie -> movie.getDirectors()
+                                                 .contains(director))
                            .count();
     }
 
-    private List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
+    List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
         return movies.stream()
                      .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
                      .collect(Collectors.toList());
