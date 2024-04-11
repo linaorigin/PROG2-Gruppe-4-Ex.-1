@@ -8,7 +8,6 @@ import okhttp3.Request;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,16 +18,35 @@ public class MovieAPI {
     public static List<Movie> getMovies(String userInput, Genres genre, String releaseYear, String ratingFrom) {
         HttpUrl url = HttpUrl.parse("https://prog2.fh-campuswien.ac.at/movies");
 
-        String query = ((!Objects.equals(userInput, "") && userInput != null) ? "query=" + userInput : "") +
+        HttpUrl.Builder queryBuilder = url.newBuilder();
+        // build query string
+        if (userInput != null) {
+            queryBuilder.addQueryParameter("query", userInput);
+        }
+        if (genre != null) {
+            queryBuilder.addQueryParameter("genre", String.valueOf(genre));
+        }
+        if (releaseYear != null) {
+            queryBuilder.addQueryParameter("releaseYear", releaseYear);
+        }
+        if (ratingFrom != null) {
+            queryBuilder.addQueryParameter("ratingFrom", ratingFrom);
+        }
+        url = queryBuilder.build();
+
+        /*String query = (userInput != null ? queryBuilder.addQueryParameter("query", userInput) : "") +
                        (genre != null ? "genre=" + genre : "") +
                        (releaseYear != null ? "releaseYear=" + releaseYear : "") +
                        (ratingFrom != null ? "ratingFrom=" + ratingFrom : "");
+
+        // attach query string to url if not empty
         if (!query.isEmpty()) {
             url = url.newBuilder()
                      .query(query)
                      .build();
         }
-
+        */
+        // build request
         Request request = new Request.Builder()
                 .url(url)
                 .header("User-Agent", "http.agent")
@@ -37,6 +55,7 @@ public class MovieAPI {
         Movie[] movies;
         try (Response response = client.newCall(request)
                                        .execute()) {
+            // dummy handling unsuccessful http response
             if (!response.isSuccessful()) {
                 System.out.println("req head: " + request.headers());
                 System.out.println("req body: " + request);
@@ -44,8 +63,11 @@ public class MovieAPI {
                 System.out.println("res body: " + response);
                 throw new IOException("Unexpected code " + response);
             }
+
+            // jackson map response json string to array of Movies
             movies = mapper.readValue(response.body()
                                               .string(), Movie[].class);
+            // catch dummy handling
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -62,6 +84,7 @@ public class MovieAPI {
         Movie movie;
         try (Response response = client.newCall(request)
                                        .execute()) {
+            // dummy handling unsuccessful http response
             if (!response.isSuccessful()) {
                 System.out.println("req head: " + request.headers());
                 System.out.println("req body: " + request);
@@ -70,6 +93,7 @@ public class MovieAPI {
                 throw new IOException("Unexpected code " + response);
             }
 
+            // jackson map single json string to Movie
             movie = mapper.readValue(response.body()
                                              .string(), Movie.class);
         } catch (IOException e) {
