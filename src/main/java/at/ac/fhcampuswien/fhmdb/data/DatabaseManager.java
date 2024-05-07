@@ -38,17 +38,17 @@ public class DatabaseManager {
     private static void createConnectionSource() throws SQLException {
         conn = new JdbcConnectionSource(DB_URL, username, password);
     }
-
-    public void createTables() throws SQLException {
-        TableUtils.createTableIfNotExists(conn, MovieEntity.class);
-        TableUtils.createTableIfNotExists(conn, WatchlistMovieEntity.class);
-    }
-
+    
     public ConnectionSource getConnectionSource() throws SQLException {
         if (conn == null) {
             createConnectionSource();
         }
         return conn;
+    }
+
+    public void createTables() throws SQLException {
+        TableUtils.createTableIfNotExists(conn, MovieEntity.class);
+        TableUtils.createTableIfNotExists(conn, WatchlistMovieEntity.class);
     }
 
     public Dao<WatchlistMovieEntity, Long> getWatchlistDao() {

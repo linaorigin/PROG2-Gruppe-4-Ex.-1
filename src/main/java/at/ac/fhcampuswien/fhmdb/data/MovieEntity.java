@@ -31,6 +31,11 @@ public class MovieEntity {
     @DatabaseField(columnName = "rating")
     private float rating;
 
+    public String getImdbId() {
+        return imdbId;
+    }
+
+
     public MovieEntity() {
     }
 
@@ -73,7 +78,6 @@ public class MovieEntity {
 
     public static List<Movie> toMovies(List<MovieEntity> movies) {
         List<Movie> outMovies = new ArrayList<>();
-        //List<Genres> g = new ArrayList<>();
         for (MovieEntity m : movies) {
             outMovies.add(new Movie(m.imdbId,
                                     m.title,

@@ -24,26 +24,26 @@ public class WatchListRepository {
         WatchlistMovieEntity newMovie = new WatchlistMovieEntity(ID);
         dao.create(newMovie);
     }
-    public void removeWatchList(String ID) throws SQLException{
+
+    public void removeWatchList(String ID) throws SQLException {
         WatchlistMovieEntity newMovie = new WatchlistMovieEntity(ID);
         dao.delete(newMovie);
     }
 
-    public void removeAllMoviesWatch() throws SQLException{
+    public void removeAllWatchMovies() throws SQLException {
         TableUtils.clearTable(getDatabaseManager().getConnectionSource(), WatchListRepository.class);
     }
 
-    public List<WatchlistMovieEntity> getAllMoviesWatch() throws SQLException {
+    public List<WatchlistMovieEntity> getAllWatchMovies() throws SQLException {
         return dao.queryForAll();
     }
 
-    public void addAllMoviesWatch(List<Movie> movies) throws SQLException {
-        for (Movie m : movies){
+    public void addAllWatchMovies(List<Movie> movies) throws SQLException {
+        for (Movie m : movies) {
             WatchlistMovieEntity newMovie = new WatchlistMovieEntity(m.getId());
             dao.create(newMovie);
         }
     }
-
 
 
 }

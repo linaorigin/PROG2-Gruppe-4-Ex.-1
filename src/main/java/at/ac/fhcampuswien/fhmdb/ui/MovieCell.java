@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
+import at.ac.fhcampuswien.fhmdb.ClickEventHandler;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,7 +47,6 @@ public class MovieCell extends ListCell<Movie> {
                             : "No description available"
             );
 
-
             // color scheme
             title.setTextFill(Color.web("#ffff00"));
             detail.setTextFill(Color.web("#ffffff"));
@@ -82,5 +82,13 @@ public class MovieCell extends ListCell<Movie> {
             setGraphic(layout);
         }
     }
+
+    public MovieCell(ClickEventHandler addToWatchlistClicked) {
+        super();
+        addToWatchlist.setOnMouseClicked(mouseEvent -> {
+            addToWatchlistClicked.onClick(getItem());
+        });
+    }
+
 }
 

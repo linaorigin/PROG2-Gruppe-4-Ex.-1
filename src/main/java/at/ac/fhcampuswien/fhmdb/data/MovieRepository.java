@@ -20,7 +20,7 @@ public class MovieRepository {
     }
 
     public void addAllMoviesList(List<Movie> movies) throws SQLException {
-        for (Movie m : movies){
+        for (Movie m : movies) {
             MovieEntity newMovie = new MovieEntity(m);
             dao.create(newMovie);
         }
@@ -30,12 +30,13 @@ public class MovieRepository {
         MovieEntity newMovie = new MovieEntity(movie);
         dao.create(newMovie);
     }
-    public void removeFromMovieList(Movie movie) throws SQLException{
+
+    public void removeFromMovieList(Movie movie) throws SQLException {
         MovieEntity newMovie = new MovieEntity(movie);
         dao.delete(newMovie);
     }
 
-    public void removeAllMovies() throws SQLException{
+    public void removeAllMovies() throws SQLException {
         TableUtils.clearTable(getDatabaseManager().getConnectionSource(), MovieRepository.class);
     }
 
@@ -43,4 +44,17 @@ public class MovieRepository {
         return dao.queryForAll();
     }
 
+    public List<MovieEntity> getMovies(List<String> ids) throws SQLException {
+        return dao.queryBuilder()
+                  .where()
+                  .in("imdbId", ids)
+                  .query();
+    }
+
+    public MovieEntity getMovie(String imdbID) throws SQLException {
+        return dao.queryBuilder()
+                  .where()
+                  .eq("imdbId", imdbID)
+                  .queryForFirst();
+    }
 }

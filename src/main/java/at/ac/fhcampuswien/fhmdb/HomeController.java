@@ -1,5 +1,8 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.data.MovieEntity;
+import at.ac.fhcampuswien.fhmdb.data.MovieRepository;
+import at.ac.fhcampuswien.fhmdb.data.WatchListRepository;
 import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
@@ -10,10 +13,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Collectors;
@@ -40,24 +45,32 @@ public class HomeController implements Initializable {
     @FXML
     public JFXButton sortBtn;
 
+    @FXML
+    public Button sceneBtn; //new ImageView(getClass().getResource("/at/ac/fhcampuswien/fhmdb/star.png").toExternalForm());
+
+    public boolean homeScene = false;
+
     public List<Movie> allMovies = Movie.initializeMovies();
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
+    private MovieRepository mRepo;
+    private WatchListRepository wRepo;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        observableMovies.addAll(allMovies);         // add dummy data to observable list
+        try {
+            mRepo = new MovieRepository();
+            wRepo = new WatchListRepository();
+            mRepo.addAllMoviesList(allMovies);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
 
         // initialize UI stuff
         movieListView.setItems(observableMovies);   // set data of observable list to list view
-        movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
-
-        // sort list as it instances unsorted
-        observableMovies.setAll(sortMovies(observableMovies,
-                                           sortBtn.getText()
-                                                  .equals("Sort (desc)")));
-
+        movieListView.setCellFactory(movieListView -> new MovieCell(onAddToWatchlistClicked)); // use custom cell factory to display data
 
         genreComboBox.setPromptText("Filter by Genre");
         genreComboBox.getItems()
@@ -137,7 +150,36 @@ public class HomeController implements Initializable {
             }
         });
 
+        sceneBtn.setOnAction(actionEvent -> {
+
+        });
+
     }
+
+    private void setScene() throws SQLException {
+        homeScene = !homeScene;
+        if (homeScene) {
+            observableMovies.removeAll();
+            observableMovies.addAll(allMovies);
+            // sort list as it instances unsorted
+            observableMovies.setAll(sortMovies(observableMovies,
+                                               sortBtn.getText()
+                                                      .equals("Sort (desc)")));
+        } else {
+            observableMovies.removeAll();
+            MovieEntity.toMovies(mRepo.getMovies(wRepo.getAllWatchMovies()
+                                                      .stream()
+                                                      .map(m -> m.getImdbId())
+                                                      .toList()));
+
+        }
+    }
+
+
+    private final ClickEventHandler onAddToWatchlistClicked = (clickedItem) ->
+    {
+
+    };
 
     List<Movie> sortMovies(List<Movie> listToSort, boolean reverseOrder) {
         if (reverseOrder) {

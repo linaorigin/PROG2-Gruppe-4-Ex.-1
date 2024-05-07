@@ -69,7 +69,6 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>2.2.224</version>
-            <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-jdbc -->
         <!-- ormlite: Object Relational Model (ORM) for controlling interaction with h2 db -->
