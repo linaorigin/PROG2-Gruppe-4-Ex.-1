@@ -22,18 +22,27 @@ public class MovieRepository {
     public void addAllMoviesList(List<Movie> movies) throws SQLException {
         for (Movie m : movies) {
             MovieEntity newMovie = new MovieEntity(m);
-            dao.create(newMovie);
+            if (dao.queryForMatching(newMovie)
+                   .isEmpty()) {
+                dao.create(newMovie);
+            }
         }
     }
 
     public void addToMovieList(Movie movie) throws SQLException {
         MovieEntity newMovie = new MovieEntity(movie);
-        dao.create(newMovie);
+        if (dao.queryForMatching(newMovie)
+               .isEmpty()) {
+            dao.create(newMovie);
+        }
     }
 
     public void removeFromMovieList(Movie movie) throws SQLException {
         MovieEntity newMovie = new MovieEntity(movie);
-        dao.delete(newMovie);
+        if (!dao.queryForMatching(newMovie)
+                .isEmpty()) {
+            dao.delete(newMovie);
+        }
     }
 
     public void removeAllMovies() throws SQLException {

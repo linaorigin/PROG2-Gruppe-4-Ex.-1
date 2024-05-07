@@ -22,12 +22,18 @@ public class WatchListRepository {
 
     public void addToWatchList(String ID) throws SQLException {
         WatchlistMovieEntity newMovie = new WatchlistMovieEntity(ID);
-        dao.create(newMovie);
+        if (dao.queryForMatching(newMovie)
+               .isEmpty()) {
+            dao.create(newMovie);
+        }
     }
 
     public void removeWatchList(String ID) throws SQLException {
         WatchlistMovieEntity newMovie = new WatchlistMovieEntity(ID);
-        dao.delete(newMovie);
+        if (!dao.queryForMatching(newMovie)
+                .isEmpty()) {
+            dao.delete(newMovie);
+        }
     }
 
     public void removeAllWatchMovies() throws SQLException {
@@ -37,13 +43,5 @@ public class WatchListRepository {
     public List<WatchlistMovieEntity> getAllWatchMovies() throws SQLException {
         return dao.queryForAll();
     }
-
-    public void addAllWatchMovies(List<Movie> movies) throws SQLException {
-        for (Movie m : movies) {
-            WatchlistMovieEntity newMovie = new WatchlistMovieEntity(m.getId());
-            dao.create(newMovie);
-        }
-    }
-
 
 }

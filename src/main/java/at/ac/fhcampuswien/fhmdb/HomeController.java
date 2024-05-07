@@ -48,7 +48,7 @@ public class HomeController implements Initializable {
     @FXML
     public Button sceneBtn; //new ImageView(getClass().getResource("/at/ac/fhcampuswien/fhmdb/star.png").toExternalForm());
 
-    public boolean homeScene = false;
+    public boolean homeScene = true;
 
     public List<Movie> allMovies = Movie.initializeMovies();
 
@@ -64,8 +64,14 @@ public class HomeController implements Initializable {
             wRepo = new WatchListRepository();
             mRepo.addAllMoviesList(allMovies);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
+        observableMovies.addAll(allMovies);
+        // sort list as it instances unsorted
+        observableMovies.setAll(sortMovies(observableMovies,
+                                           sortBtn.getText()
+                                                  .equals("Sort (desc)")));
 
 
         // initialize UI stuff
@@ -151,12 +157,12 @@ public class HomeController implements Initializable {
         });
 
         sceneBtn.setOnAction(actionEvent -> {
-
+            setScene();
         });
 
     }
 
-    private void setScene() throws SQLException {
+    private void setScene() {
         homeScene = !homeScene;
         if (homeScene) {
             observableMovies.removeAll();
@@ -167,18 +173,28 @@ public class HomeController implements Initializable {
                                                       .equals("Sort (desc)")));
         } else {
             observableMovies.removeAll();
-            MovieEntity.toMovies(mRepo.getMovies(wRepo.getAllWatchMovies()
-                                                      .stream()
-                                                      .map(m -> m.getImdbId())
-                                                      .toList()));
-
+            try {
+                List<String> a = wRepo.getAllWatchMovies()
+                                      .stream()
+                                      .map(m -> m.getImdbId())
+                                      .toList();
+                List<MovieEntity> me = mRepo.getMovies(a);
+                List<Movie> m = MovieEntity.toMovies(me);
+                observableMovies.addAll(m);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
 
     private final ClickEventHandler onAddToWatchlistClicked = (clickedItem) ->
     {
-
+        try {
+            wRepo.addToWatchList(((Movie) clickedItem).getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     };
 
     List<Movie> sortMovies(List<Movie> listToSort, boolean reverseOrder) {

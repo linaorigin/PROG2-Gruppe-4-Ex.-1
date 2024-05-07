@@ -58,8 +58,14 @@ public class MovieEntity {
     }
 
     public MovieEntity(Movie movie) {
-        new MovieEntity(movie.getId(), movie.getTitle(), movie.getGenres(), movie.getReleaseYear(),
-                        movie.getDescription(), movie.getImgUrl(), movie.getLengthInMinutes(), movie.getRating());
+        this(movie.getId(),
+             movie.getTitle(),
+             movie.getGenres(),
+             movie.getReleaseYear(),
+             movie.getDescription(),
+             movie.getImgUrl(),
+             movie.getLengthInMinutes(),
+             movie.getRating());
     }
 
     String genresToString(List<Genres> genres) {
