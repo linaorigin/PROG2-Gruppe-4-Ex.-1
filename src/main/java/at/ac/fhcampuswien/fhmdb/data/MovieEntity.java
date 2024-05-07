@@ -1,9 +1,12 @@
 package at.ac.fhcampuswien.fhmdb.data;
 
 import at.ac.fhcampuswien.fhmdb.models.Genres;
+import at.ac.fhcampuswien.fhmdb.models.Movie;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +18,7 @@ public class MovieEntity {
     private String imdbId;
     @DatabaseField(columnName = "title")
     private String title;
-    @DatabaseField(columnName = "title")
+    @DatabaseField(columnName = "genres")
     private String genres;
     @DatabaseField(columnName = "releaseYear")
     private int releaseYear;
@@ -28,6 +31,8 @@ public class MovieEntity {
     @DatabaseField(columnName = "rating")
     private float rating;
 
+    public MovieEntity() {
+    }
 
     public MovieEntity(String imdbId,
                        String title,
@@ -39,13 +44,51 @@ public class MovieEntity {
                        float rating) {
         this.imdbId = imdbId;
         this.title = title;
-        this.genres = genres.stream()
-                            .map(n -> String.valueOf(n))
-                            .collect(Collectors.joining("-"));
+        this.genres = genresToString(genres);
         this.releaseYear = releaseYear;
         this.description = description;
         this.imgUrl = imgUrl;
         this.lengthInMinutes = lengthInMinutes;
         this.rating = rating;
+    }
+
+    public MovieEntity(Movie movie) {
+        new MovieEntity(movie.getId(), movie.getTitle(), movie.getGenres(), movie.getReleaseYear(),
+                        movie.getDescription(), movie.getImgUrl(), movie.getLengthInMinutes(), movie.getRating());
+    }
+
+    String genresToString(List<Genres> genres) {
+        return genres.stream()
+                     .map(n -> String.valueOf(n))
+                     .collect(Collectors.joining(","));
+    }
+
+    public static List<MovieEntity> fromMovies(List<Movie> movies) {
+        List<MovieEntity> outMovieEntities = new ArrayList<>();
+        for (Movie m : movies) {
+            outMovieEntities.add(new MovieEntity(m));
+        }
+        return outMovieEntities;
+    }
+
+    public static List<Movie> toMovies(List<MovieEntity> movies) {
+        List<Movie> outMovies = new ArrayList<>();
+        //List<Genres> g = new ArrayList<>();
+        for (MovieEntity m : movies) {
+            outMovies.add(new Movie(m.imdbId,
+                                    m.title,
+                                    Arrays.stream(m.genres.split(","))
+                                          .map(e -> Genres.valueOf(e))
+                                          .toList(),
+                                    m.releaseYear,
+                                    m.description,
+                                    m.imgUrl,
+                                    m.lengthInMinutes,
+                                    null,
+                                    null,
+                                    null,
+                                    m.rating));
+        }
+        return outMovies;
     }
 }

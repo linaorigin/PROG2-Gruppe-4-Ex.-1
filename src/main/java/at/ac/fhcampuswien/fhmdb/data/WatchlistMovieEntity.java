@@ -1,22 +1,21 @@
 package at.ac.fhcampuswien.fhmdb.data;
 
-import at.ac.fhcampuswien.fhmdb.models.Genres;
+import com.j256.ormlite.field.DatabaseField;
 
 import java.util.List;
 
-public class WatchlistMovieEntity extends MovieEntity {
+public class WatchlistMovieEntity {
 
+    @DatabaseField(generatedId = true)
+    private long id;
+    @DatabaseField(columnName = "imdbId")
+    private String imdbId;
 
+    public WatchlistMovieEntity() {
+    }
 
-    public WatchlistMovieEntity(String imdbId,
-                                 String title,
-                                 List<Genres> genres,
-                                 int releaseYear,
-                                 String description,
-                                 String imgUrl,
-                                 int lengthInMinutes,
-                                 float rating) {
-        super(imdbId, title, genres, releaseYear, description, imgUrl, lengthInMinutes, rating);
+    public WatchlistMovieEntity(String imdbId) {
+        this.imdbId = imdbId;
     }
 
 }

@@ -17,4 +17,5 @@ module at.ac.fhcampuswien.fhmdb {
     exports at.ac.fhcampuswien.fhmdb;
     opens at.ac.fhcampuswien.fhmdb.models to com.fasterxml.jackson.databind;
     exports at.ac.fhcampuswien.fhmdb.models;
+    opens at.ac.fhcampuswien.fhmdb.data to ormlite.jdbc;
 }

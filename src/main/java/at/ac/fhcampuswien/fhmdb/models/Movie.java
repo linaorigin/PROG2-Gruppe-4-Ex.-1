@@ -9,6 +9,7 @@ import java.util.Objects;
 import at.ac.fhcampuswien.fhmdb.MovieAPI;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javafx.scene.control.Alert;
 
 public class Movie {
     private final String id;
@@ -18,7 +19,6 @@ public class Movie {
     private final String description;
     private final String imgUrl;
     private final int lengthInMinutes;
-
     private final List<String> directors;
     private final List<String> writers;
     private final List<String> mainCast;
@@ -50,6 +50,11 @@ public class Movie {
         this.rating = rating;
     }
 
+
+    public String getId() {
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -78,9 +83,30 @@ public class Movie {
         return directors;
     }
 
+    public String getImgUrl() {
+        return imgUrl;
+    }
 
-    public static List<Movie> initializeMovies() throws IOException {
-        return MovieAPI.getMovies(null, null, null, null);
+    public int getLengthInMinutes() {
+        return lengthInMinutes;
+    }
+
+    public List<String> getWriters() {
+        return writers;
+    }
+
+
+    public static List<Movie> initializeMovies() {
+        List<Movie> m = new ArrayList<>();
+        try {
+            m = MovieAPI.getMovies(null, null, null, null);
+        } catch (IOException ex) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setHeaderText("IOException: MovieAPI");
+            a.setContentText(ex.getLocalizedMessage());
+            a.showAndWait();
+        }
+        return m;
     }
 
 

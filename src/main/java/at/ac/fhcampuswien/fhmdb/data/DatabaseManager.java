@@ -17,25 +17,45 @@ public class DatabaseManager {
     private static ConnectionSource conn;
     Dao<MovieEntity, Long> movieDao;
 
-    Dao<MovieEntity, Long> watchlistDao;
+    Dao<WatchlistMovieEntity, Long> watchlistDao;
 
     private static DatabaseManager instance;
 
     private DatabaseManager() throws SQLException {
         createConnectionSource();
         movieDao = DaoManager.createDao(conn, MovieEntity.class);
-        TableUtils.createTableIfNotExists(conn, MovieEntity.class);
+        watchlistDao = DaoManager.createDao(conn, WatchlistMovieEntity.class);
+        createTables();
     }
 
-    public DatabaseManager getDatabaseManager() throws SQLException {
+    public static DatabaseManager getDatabaseManager() throws SQLException {
         if (instance == null) {
             instance = new DatabaseManager();
         }
         return instance;
     }
 
-
     private static void createConnectionSource() throws SQLException {
         conn = new JdbcConnectionSource(DB_URL, username, password);
+    }
+
+    public void createTables() throws SQLException {
+        TableUtils.createTableIfNotExists(conn, MovieEntity.class);
+        TableUtils.createTableIfNotExists(conn, WatchlistMovieEntity.class);
+    }
+
+    public ConnectionSource getConnectionSource() throws SQLException {
+        if (conn == null) {
+            createConnectionSource();
+        }
+        return conn;
+    }
+
+    public Dao<WatchlistMovieEntity, Long> getWatchlistDao() {
+        return watchlistDao;
+    }
+
+    public Dao<MovieEntity, Long> getMovieDao() {
+        return movieDao;
     }
 }
