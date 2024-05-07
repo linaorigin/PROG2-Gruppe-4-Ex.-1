@@ -1,6 +1,7 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +79,7 @@ public class Movie {
     }
 
 
-    public static List<Movie> initializeMovies() {
+    public static List<Movie> initializeMovies() throws IOException {
         return MovieAPI.getMovies(null, null, null, null);
     }
 

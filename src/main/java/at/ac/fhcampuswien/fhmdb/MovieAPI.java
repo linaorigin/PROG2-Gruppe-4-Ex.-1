@@ -15,7 +15,10 @@ public class MovieAPI {
     private static final OkHttpClient client = new OkHttpClient();
     static ObjectMapper mapper = new ObjectMapper();
 
-    public static List<Movie> getMovies(String userInput, Genres genre, String releaseYear, String ratingFrom) {
+    public static List<Movie> getMovies(String userInput,
+                                        Genres genre,
+                                        String releaseYear,
+                                        String ratingFrom) throws IOException {
         HttpUrl url = HttpUrl.parse("https://prog2.fh-campuswien.ac.at/movies");
 
         HttpUrl.Builder queryBuilder = url.newBuilder();
@@ -53,24 +56,20 @@ public class MovieAPI {
                 .build();
 
         Movie[] movies;
-        try (Response response = client.newCall(request)
-                                       .execute()) {
-            // dummy handling unsuccessful http response
-            if (!response.isSuccessful()) {
-                System.out.println("req head: " + request.headers());
-                System.out.println("req body: " + request);
-                System.out.println("res head: " + response.headers());
-                System.out.println("res body: " + response);
-                throw new IOException("Unexpected code " + response);
-            }
-
-            // jackson map response json string to array of Movies
-            movies = mapper.readValue(response.body()
-                                              .string(), Movie[].class);
-            // catch dummy handling
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Response response = client.newCall(request)
+                                  .execute();
+        // dummy handling unsuccessful http response
+        if (!response.isSuccessful()) {
+            System.out.println("req head: " + request.headers());
+            System.out.println("req body: " + request);
+            System.out.println("res head: " + response.headers());
+            System.out.println("res body: " + response);
+            throw new IOException("Unexpected code " + response);
         }
+
+        // jackson map response json string to array of Movies
+        movies = mapper.readValue(response.body()
+                                          .string(), Movie[].class);
 
         return List.of(movies);
     }

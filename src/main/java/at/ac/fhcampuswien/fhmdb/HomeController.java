@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -88,20 +89,37 @@ public class HomeController implements Initializable {
 
 
         searchBtn.setOnAction(actionEvent -> {
-            observableMovies.setAll(filterMovies(allMovies,
-                                                 (!Objects.equals(searchField.getText(), "") ?
-                                                         searchField.getText() :
-                                                         null),
-                                                 (genreComboBox.getValue() != "" ?
-                                                         (Genres) genreComboBox.getValue() :
-                                                         null),
-                                                 (!Objects.equals(releaseYearComboBox.getValue(), "") ?
-                                                         releaseYearComboBox.getValue() :
-                                                         null),
-                                                 (!Objects.equals(ratingComboBox.getValue(), "") ?
-                                                         ratingComboBox.getValue() :
-                                                         null)
-            ));
+            try {
+                observableMovies.setAll(filterMovies(allMovies,
+                                                     (!Objects.equals(searchField.getText(), "") ?
+                                                             searchField.getText() :
+                                                             null),
+                                                     (genreComboBox.getValue() != "" ?
+                                                             (Genres) genreComboBox.getValue() :
+                                                             null),
+                                                     (!Objects.equals(releaseYearComboBox.getValue(), "") ?
+                                                             releaseYearComboBox.getValue() :
+                                                             null),
+                                                     (!Objects.equals(ratingComboBox.getValue(), "") ?
+                                                             ratingComboBox.getValue() :
+                                                             null)
+                ));
+                throw new IOException();
+            } catch (IOException e) {
+                observableMovies.setAll(filterLocalMovies(allMovies,
+                                                          (!Objects.equals(searchField.getText(), "") ?
+                                                                  searchField.getText() :
+                                                                  null),
+                                                          (genreComboBox.getValue() != "" ?
+                                                                  (Genres) genreComboBox.getValue() :
+                                                                  null),
+                                                          (!Objects.equals(releaseYearComboBox.getValue(), "") ?
+                                                                  Integer.parseInt(releaseYearComboBox.getValue()) :
+                                                                  null),
+                                                          (!Objects.equals(ratingComboBox.getValue(), "") ?
+                                                                  Float.parseFloat(ratingComboBox.getValue()) :
+                                                                  null)));
+            }
             observableMovies.setAll(sortMovies(observableMovies,
                                                sortBtn.getText()
                                                       .equals("Sort (desc)")));
@@ -119,7 +137,6 @@ public class HomeController implements Initializable {
             }
         });
 
-
     }
 
     List<Movie> sortMovies(List<Movie> listToSort, boolean reverseOrder) {
@@ -134,31 +151,36 @@ public class HomeController implements Initializable {
                          .toList();
     }
 
-    List<Movie> filterMovies(List<Movie> listToFilter, String text, Genres genre, String releaseYear, String rating) {
+    List<Movie> filterMovies(List<Movie> listToFilter,
+                             String text,
+                             Genres genre,
+                             String releaseYear,
+                             String rating) throws IOException {
         return MovieAPI.getMovies(text, genre, releaseYear, rating);
     }
 
     // local filtering
-    /*
-        List<Movie> filterMovies(List<Movie> listToFilter, String text, Genres genre, int releaseYear, float rating) {
-            return listToFilter.stream()
-                               .filter(movie -> (movie.getTitle()
-                                                      .toLowerCase()
-                                                      .contains(text.toLowerCase())
-                                                 || movie.getDescription()
-                                                         .toLowerCase()
-                                                         .contains(text.toLowerCase()))
-                                                && (genre == null
-                                                    || genre == Genres.REMOVE_FILTER
-                                                    || movie.getGenres().contains(genre))
-                                                && (releaseYear == -1
-                                                    || releaseYear == movie.getReleaseYear())
-                                                && (rating == -1f
-                                                    || rating <= movie.getReleaseYear()))
-                               .toList();
-        }
+    List<Movie> filterLocalMovies(List<Movie> listToFilter, String text, Genres genre, int releaseYear, float rating) {
+        return listToFilter.stream()
+                           .filter(movie -> (movie.getTitle()
+                                                  .toLowerCase()
+                                                  .contains(text.toLowerCase())
+                                             || movie.getDescription()
+                                                     .toLowerCase()
+                                                     .contains(text.toLowerCase()))
+                                            && (genre == null
+                                                ||
+                                                Objects.equals(String.valueOf(genre), "")
+                                                ||
+                                                movie.getGenres()
+                                                     .contains(genre))
+                                            && (releaseYear == -1
+                                                || releaseYear == movie.getReleaseYear())
+                                            && (rating == -1f
+                                                || rating <= movie.getReleaseYear()))
+                           .toList();
+    }
 
-     */
     String getMostPopularActor(List<Movie> movies) {
         Map<String, Long> mainCastCount = movies.stream()
                                                 .flatMap(movie -> movie.getMainCast()

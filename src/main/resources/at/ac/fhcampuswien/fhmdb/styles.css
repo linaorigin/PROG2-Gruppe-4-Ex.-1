@@ -38,3 +38,13 @@
     -fx-background-color: white;
     -fx-text-fill: #ffffff;
 }
+
+.movie-btn {
+    -fx-background-color: #f5c518;
+    -fx-text-fill: #454545;
+    -fx-margin: 5;
+}
+
+.watchlist-btn {
+      -fx-background-color: transparent;
+}

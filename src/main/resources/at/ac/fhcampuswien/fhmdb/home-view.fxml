@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.Button?>
 <VBox prefHeight="331.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="at.ac.fhcampuswien.fhmdb.HomeController">
     <HBox alignment="CENTER_LEFT" prefHeight="42.0" prefWidth="347.0" spacing="20.0"
@@ -27,6 +28,7 @@
                 </padding>
             </Label>
             <Label styleClass="text-white" stylesheets="@styles.css" text="Welcome to FHMDb!"/>
+            <Button styleClass="watchlist-btn" stylesheets="@styles.css"/>
         </children>
     </HBox>
     <HBox spacing="5.0" styleClass="background-black" stylesheets="@styles.css">
