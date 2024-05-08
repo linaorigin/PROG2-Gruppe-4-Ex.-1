@@ -46,5 +46,6 @@
 }
 
 .watchlist-btn {
-      -fx-background-color: transparent;
+      -fx-background-color: green;
+      -fx-alignment: top-right;
 }

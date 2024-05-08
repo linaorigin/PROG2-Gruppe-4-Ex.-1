@@ -22,7 +22,7 @@ public class MovieRepository {
     public void addAllMoviesList(List<Movie> movies) throws SQLException {
         for (Movie m : movies) {
             MovieEntity newMovie = new MovieEntity(m);
-            if (dao.queryForMatching(newMovie)
+            if (dao.queryForEq("imdbId", newMovie.getImdbId())
                    .isEmpty()) {
                 dao.create(newMovie);
             }
@@ -31,7 +31,7 @@ public class MovieRepository {
 
     public void addToMovieList(Movie movie) throws SQLException {
         MovieEntity newMovie = new MovieEntity(movie);
-        if (dao.queryForMatching(newMovie)
+        if (dao.queryForEq("imdbId", newMovie.getImdbId())
                .isEmpty()) {
             dao.create(newMovie);
         }
@@ -39,7 +39,7 @@ public class MovieRepository {
 
     public void removeFromMovieList(Movie movie) throws SQLException {
         MovieEntity newMovie = new MovieEntity(movie);
-        if (!dao.queryForMatching(newMovie)
+        if (!dao.queryForEq("imdbId", newMovie.getImdbId())
                 .isEmpty()) {
             dao.delete(newMovie);
         }

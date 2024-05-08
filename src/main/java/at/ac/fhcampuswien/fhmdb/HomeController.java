@@ -165,25 +165,27 @@ public class HomeController implements Initializable {
     private void setScene() {
         homeScene = !homeScene;
         if (homeScene) {
-            observableMovies.removeAll();
-            observableMovies.addAll(allMovies);
+            observableMovies.setAll(allMovies);
             // sort list as it instances unsorted
             observableMovies.setAll(sortMovies(observableMovies,
                                                sortBtn.getText()
                                                       .equals("Sort (desc)")));
         } else {
-            observableMovies.removeAll();
-            try {
-                List<String> a = wRepo.getAllWatchMovies()
-                                      .stream()
-                                      .map(m -> m.getImdbId())
-                                      .toList();
-                List<MovieEntity> me = mRepo.getMovies(a);
-                List<Movie> m = MovieEntity.toMovies(me);
-                observableMovies.addAll(m);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            updateWatchListView();
+        }
+    }
+
+    private void updateWatchListView() {
+        try {
+            List<String> a = wRepo.getAllWatchMovies()
+                                  .stream()
+                                  .map(m -> m.getImdbId())
+                                  .toList();
+            List<MovieEntity> me = mRepo.getMovies(a);
+            List<Movie> m = MovieEntity.toMovies(me);
+            observableMovies.setAll(m);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -191,7 +193,12 @@ public class HomeController implements Initializable {
     private final ClickEventHandler onAddToWatchlistClicked = (clickedItem) ->
     {
         try {
-            wRepo.addToWatchList(((Movie) clickedItem).getId());
+            if (homeScene) {
+                wRepo.addToWatchList(((Movie) clickedItem).getId());
+            } else {
+                wRepo.removeWatchList(((Movie) clickedItem).getId());
+                updateWatchListView();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
