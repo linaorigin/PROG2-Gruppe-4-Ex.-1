@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.exceptions.MovieAPIException;
 import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import okhttp3.*;
@@ -18,7 +19,7 @@ public class MovieAPI {
     public static List<Movie> getMovies(String userInput,
                                         Genres genre,
                                         String releaseYear,
-                                        String ratingFrom) throws IOException {
+                                        String ratingFrom) throws MovieAPIException {
         HttpUrl url = HttpUrl.parse("https://prog2.fh-campuswien.ac.at/movies");
 
         HttpUrl.Builder queryBuilder = url.newBuilder();
@@ -37,18 +38,6 @@ public class MovieAPI {
         }
         url = queryBuilder.build();
 
-        /*String query = (userInput != null ? queryBuilder.addQueryParameter("query", userInput) : "") +
-                       (genre != null ? "genre=" + genre : "") +
-                       (releaseYear != null ? "releaseYear=" + releaseYear : "") +
-                       (ratingFrom != null ? "ratingFrom=" + ratingFrom : "");
-
-        // attach query string to url if not empty
-        if (!query.isEmpty()) {
-            url = url.newBuilder()
-                     .query(query)
-                     .build();
-        }
-        */
         // build request
         Request request = new Request.Builder()
                 .url(url)
@@ -56,25 +45,19 @@ public class MovieAPI {
                 .build();
 
         Movie[] movies;
-        Response response = client.newCall(request)
-                                  .execute();
-        // dummy handling unsuccessful http response
-        if (!response.isSuccessful()) {
-            System.out.println("req head: " + request.headers());
-            System.out.println("req body: " + request);
-            System.out.println("res head: " + response.headers());
-            System.out.println("res body: " + response);
-            throw new IOException("Unexpected code " + response);
+        try (Response response = client.newCall(request)
+                                       .execute()) {
+            // jackson map response json string to array of Movies
+            movies = mapper.readValue(response.body()
+                                              .string(), Movie[].class);
+        } catch (IOException e) {
+            throw new MovieAPIException("");
         }
-
-        // jackson map response json string to array of Movies
-        movies = mapper.readValue(response.body()
-                                          .string(), Movie[].class);
 
         return List.of(movies);
     }
 
-    public static Movie getMovieById(String id) {
+    public static Movie getMovieById(String id) throws MovieAPIException {
         Request request = new Request.Builder()
                 .url("https://prog2.fh-campuswien.ac.at/movies/" + id)
                 .header("User-Agent", "http.agent")
@@ -83,20 +66,11 @@ public class MovieAPI {
         Movie movie;
         try (Response response = client.newCall(request)
                                        .execute()) {
-            // dummy handling unsuccessful http response
-            if (!response.isSuccessful()) {
-                System.out.println("req head: " + request.headers());
-                System.out.println("req body: " + request);
-                System.out.println("res head: " + response.headers());
-                System.out.println("res body: " + response);
-                throw new IOException("Unexpected code " + response);
-            }
-
-            // jackson map single json string to Movie
+            // jackson map response json string to array of Movies
             movie = mapper.readValue(response.body()
                                              .string(), Movie.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new MovieAPIException("");
         }
         return movie;
     }

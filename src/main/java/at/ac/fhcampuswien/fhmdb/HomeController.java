@@ -3,6 +3,7 @@ package at.ac.fhcampuswien.fhmdb;
 import at.ac.fhcampuswien.fhmdb.data.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.data.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.data.WatchListRepository;
+import at.ac.fhcampuswien.fhmdb.exceptions.MovieAPIException;
 import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
@@ -50,7 +51,7 @@ public class HomeController implements Initializable {
 
     public boolean homeScene = true;
 
-    public List<Movie> allMovies = Movie.initializeMovies();
+    public List<Movie> allMovies;
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
@@ -62,10 +63,19 @@ public class HomeController implements Initializable {
         try {
             mRepo = new MovieRepository();
             wRepo = new WatchListRepository();
-            mRepo.addAllMoviesList(allMovies);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        try {
+            allMovies = Movie.initializeMovies();
+        } catch (MovieAPIException e) {
+            try {
+                allMovies = MovieEntity.toMovies(mRepo.getAllMovies());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
 
         observableMovies.addAll(allMovies);
         // sort list as it instances unsorted
