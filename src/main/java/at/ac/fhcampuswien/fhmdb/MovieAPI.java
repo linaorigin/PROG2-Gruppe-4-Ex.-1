@@ -20,48 +20,27 @@ public class MovieAPI {
                                         Genres genre,
                                         String releaseYear,
                                         String ratingFrom) throws MovieAPIException {
-        HttpUrl url = HttpUrl.parse("https://prog2.fh-campuswien.ac.at/movies");
-
-        HttpUrl.Builder queryBuilder = url.newBuilder();
-        // build query string
-        if (userInput != null) {
-            queryBuilder.addQueryParameter("query", userInput);
-        }
-        if (genre != null) {
-            queryBuilder.addQueryParameter("genre", String.valueOf(genre));
-        }
-        if (releaseYear != null) {
-            queryBuilder.addQueryParameter("releaseYear", releaseYear);
-        }
-        if (ratingFrom != null) {
-            queryBuilder.addQueryParameter("ratingFrom", ratingFrom);
-        }
-        url = queryBuilder.build();
-
-        // build request
-        Request request = new Request.Builder()
-                .url(url)
-                .header("User-Agent", "http.agent")
-                .build();
-
+        String baseUrl = "https://prog2.fh-campuswien.ac.at/movies";
+        Request req = new MovieAPIRequestBuilder(baseUrl).query(userInput)
+                                                         .genre(genre)
+                                                         .releaseYear(releaseYear)
+                                                         .ratingFrom(ratingFrom)
+                                                         .build();
         Movie[] movies;
-        try (Response response = client.newCall(request)
+        try (Response response = client.newCall(req)
                                        .execute()) {
             // jackson map response json string to array of Movies
             movies = mapper.readValue(response.body()
                                               .string(), Movie[].class);
         } catch (IOException e) {
-            throw new MovieAPIException("");
+            throw new MovieAPIException("MovieAPI failed");
         }
 
         return List.of(movies);
     }
 
     public static Movie getMovieById(String id) throws MovieAPIException {
-        Request request = new Request.Builder()
-                .url("https://prog2.fh-campuswien.ac.at/movies/" + id)
-                .header("User-Agent", "http.agent")
-                .build();
+        Request request = new MovieAPIRequestBuilder("https://prog2.fh-campuswien.ac.at/movies/" + id).build();
 
         Movie movie;
         try (Response response = client.newCall(request)
