@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 import at.ac.fhcampuswien.fhmdb.MovieAPI;
+import at.ac.fhcampuswien.fhmdb.exceptions.MovieAPIException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.control.Alert;
@@ -96,16 +97,10 @@ public class Movie {
     }
 
 
-    public static List<Movie> initializeMovies() {
+    public static List<Movie> initializeMovies() throws MovieAPIException {
         List<Movie> m = new ArrayList<>();
-        try {
-            m = MovieAPI.getMovies(null, null, null, null);
-        } catch (IOException ex) {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setHeaderText("IOException: MovieAPI");
-            a.setContentText(ex.getLocalizedMessage());
-            a.showAndWait();
-        }
+        m = MovieAPI.getMovies(null, null, null, null);
+
         return m;
     }
 

@@ -3,6 +3,7 @@ package at.ac.fhcampuswien.fhmdb;
 import at.ac.fhcampuswien.fhmdb.data.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.data.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.data.WatchListRepository;
+import at.ac.fhcampuswien.fhmdb.exceptions.MovieAPIException;
 import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
@@ -57,7 +58,7 @@ public class HomeController implements Initializable {
 
     public boolean homeScene = true;
 
-    public List<Movie> allMovies = Movie.initializeMovies();
+    public List<Movie> allMovies;
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
@@ -73,10 +74,19 @@ public class HomeController implements Initializable {
         try {
             mRepo = MovieRepository.getInstance();
             wRepo = new WatchListRepository();
-            mRepo.addAllMoviesList(allMovies);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        try {
+            allMovies = Movie.initializeMovies();
+        } catch (MovieAPIException e) {
+            try {
+                allMovies = MovieEntity.toMovies(mRepo.getAllMovies());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
 
         observableMovies.addAll(allMovies);
         // sort list as it instances unsorted
@@ -116,40 +126,30 @@ public class HomeController implements Initializable {
         ratingComboBox.setPromptText("Min Rating");
         ratingComboBox.getItems()
                       .add(0, "");
-
+        /*
+        genreComboBox.getSelectionModel()
+                     .select(0);
+        releaseYearComboBox.getSelectionModel()
+                           .select(0);
+        ratingComboBox.getSelectionModel()
+                      .select(0);
+*/
 
         searchBtn.setOnAction(actionEvent -> {
-            try {
-                observableMovies.setAll(filterMovies(allMovies,
-                                                     (!Objects.equals(searchField.getText(), "") ?
-                                                             searchField.getText() :
-                                                             null),
-                                                     (genreComboBox.getValue() != "" ?
-                                                             (Genres) genreComboBox.getValue() :
-                                                             null),
-                                                     (!Objects.equals(releaseYearComboBox.getValue(), "") ?
-                                                             releaseYearComboBox.getValue() :
-                                                             null),
-                                                     (!Objects.equals(ratingComboBox.getValue(), "") ?
-                                                             ratingComboBox.getValue() :
-                                                             null)
-                ));
-                throw new IOException();
-            } catch (IOException e) {
-                observableMovies.setAll(filterLocalMovies(allMovies,
-                                                          (!Objects.equals(searchField.getText(), "") ?
-                                                                  searchField.getText() :
-                                                                  null),
-                                                          (genreComboBox.getValue() != "" ?
-                                                                  (Genres) genreComboBox.getValue() :
-                                                                  null),
-                                                          (!Objects.equals(releaseYearComboBox.getValue(), "") ?
-                                                                  Integer.parseInt(releaseYearComboBox.getValue()) :
-                                                                  null),
-                                                          (!Objects.equals(ratingComboBox.getValue(), "") ?
-                                                                  Float.parseFloat(ratingComboBox.getValue()) :
-                                                                  null)));
-            }
+            observableMovies.setAll(filterMovies(allMovies,
+                                                 (!Objects.equals(searchField.getText(), "") ?
+                                                         searchField.getText() :
+                                                         null),
+                                                 (genreComboBox.getValue() != "" ?
+                                                         (Genres) genreComboBox.getValue() :
+                                                         null),
+                                                 (!Objects.equals(releaseYearComboBox.getValue(), "") ?
+                                                         releaseYearComboBox.getValue() :
+                                                         null),
+                                                 (!Objects.equals(ratingComboBox.getValue(), "") ?
+                                                         ratingComboBox.getValue() :
+                                                         null)
+            ));
             observableMovies.setAll(sortMovies(observableMovies,
                                                sortBtn.getText()
                                                       .equals("Sort (desc)")));
@@ -233,8 +233,16 @@ public class HomeController implements Initializable {
                              String text,
                              Genres genre,
                              String releaseYear,
-                             String rating) throws IOException {
-        return MovieAPI.getMovies(text, genre, releaseYear, rating);
+                             String rating) {
+        try {
+            return MovieAPI.getMovies(text, genre, releaseYear, rating);
+        } catch (MovieAPIException ex) {
+            return filterLocalMovies(listToFilter,
+                                     (text != null ? text : ""),
+                                     genre,
+                                     Integer.parseInt((releaseYear != null ? releaseYear : String.valueOf(-1))),
+                                     Float.parseFloat((rating != null ? rating : String.valueOf(-1f))));
+        }
     }
 
     // local filtering
@@ -255,7 +263,7 @@ public class HomeController implements Initializable {
                                             && (releaseYear == -1
                                                 || releaseYear == movie.getReleaseYear())
                                             && (rating == -1f
-                                                || rating <= movie.getReleaseYear()))
+                                                || rating <= movie.getRating()))
                            .toList();
     }
 
