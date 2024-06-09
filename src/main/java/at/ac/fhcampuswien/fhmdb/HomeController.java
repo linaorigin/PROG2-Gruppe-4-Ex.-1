@@ -19,10 +19,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
-import states.AscendingState;
-import states.DescendingState;
-import states.State;
-import states.UnsortedState;
+import at.ac.fhcampuswien.fhmdb.states.AscendingState;
+import at.ac.fhcampuswien.fhmdb.states.DescendingState;
+import at.ac.fhcampuswien.fhmdb.states.State;
+import at.ac.fhcampuswien.fhmdb.states.UnsortedState;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,7 +32,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 public class HomeController implements Initializable, Observer {
-
 
 
     @FXML
@@ -96,7 +95,7 @@ public class HomeController implements Initializable, Observer {
         // sort list as it instances unsorted
         unsortedSortState = new UnsortedState(allMovies);
         state = unsortedSortState;
-        sortBtn.setText("Sort (asc)");
+        sortBtn.setText("Unsorted");
 
 
         // initialize UI stuff
@@ -130,14 +129,6 @@ public class HomeController implements Initializable, Observer {
         ratingComboBox.setPromptText("Min Rating");
         ratingComboBox.getItems()
                       .add(0, "");
-        /*
-        genreComboBox.getSelectionModel()
-                     .select(0);
-        releaseYearComboBox.getSelectionModel()
-                           .select(0);
-        ratingComboBox.getSelectionModel()
-                      .select(0);
-*/
 
         searchBtn.setOnAction(actionEvent -> {
             observableMovies.setAll(filterMovies(allMovies,
@@ -154,22 +145,18 @@ public class HomeController implements Initializable, Observer {
                                                          ratingComboBox.getValue() :
                                                          null)
             ));
-            observableMovies.setAll(sortMovies(observableMovies,
-                                               sortBtn.getText()
-                                                      .equals("Sort (desc)")));
-
-
+            observableMovies.setAll(state.sortMovies(observableMovies));
         });
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if(state instanceof UnsortedState){
+            if (state instanceof UnsortedState || (!homeScene && state instanceof DescendingState)) {
                 state = ascendingSortState;
                 sortBtn.setText("Sort (asc)");
-            }else if(state instanceof AscendingState){
+            } else if (state instanceof AscendingState) {
                 state = descendingSortState;
                 sortBtn.setText("Sort (desc)");
-            }else {
+            } else if (homeScene) {
                 state = unsortedSortState;
                 sortBtn.setText("Unsorted");
             }
@@ -186,7 +173,6 @@ public class HomeController implements Initializable, Observer {
         homeScene = !homeScene;
         if (homeScene) {
             observableMovies.setAll(state.sortMovies(allMovies));
-
         } else {
             updateWatchListView();
         }
@@ -200,7 +186,9 @@ public class HomeController implements Initializable, Observer {
                                   .toList();
             List<MovieEntity> me = mRepo.getMovies(a);
             List<Movie> m = MovieEntity.toMovies(me);
-            observableMovies.setAll(m);
+            state = ascendingSortState;
+            sortBtn.setText("Sort (asc)");
+            observableMovies.setAll(state.sortMovies(m));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -221,18 +209,21 @@ public class HomeController implements Initializable, Observer {
         }
     };
 
-    List<Movie> sortMovies(List<Movie> listToSort, boolean reverseOrder) {
-        if (reverseOrder) {
-            return listToSort.stream()
-                             .sorted(Comparator.comparing(Movie::getTitle)
-                                               .reversed())
-                             .toList();
+    /*
+        void sortMovies(List<Movie> listToSort, boolean changeState) {
+            if (state instanceof UnsortedState || (!homeScene && state instanceof DescendingState)) {
+                state = ascendingSortState;
+                sortBtn.setText("Sort (asc)");
+            } else if (state instanceof AscendingState) {
+                state = descendingSortState;
+                sortBtn.setText("Sort (desc)");
+            } else if (homeScene) {
+                state = unsortedSortState;
+                sortBtn.setText("Unsorted");
+            }
+            observableMovies.setAll(state.sortMovies(listToSort));
         }
-        return listToSort.stream()
-                         .sorted(Comparator.comparing(Movie::getTitle))
-                         .toList();
-    }
-
+    */
     List<Movie> filterMovies(List<Movie> listToFilter,
                              String text,
                              Genres genre,

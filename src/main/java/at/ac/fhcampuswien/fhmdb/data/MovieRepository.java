@@ -17,11 +17,12 @@ public class MovieRepository {
 
     private static MovieRepository instance;
 
-    private MovieRepository() throws SQLException{
-        this.dao = getDatabaseManager().getMovieDao();;
+    private MovieRepository() throws SQLException {
+        this.dao = getDatabaseManager().getMovieDao();
     }
-    public static synchronized MovieRepository getInstance() throws SQLException{
-        if (instance == null){
+
+    public static synchronized MovieRepository getInstance() throws SQLException {
+        if (instance == null) {
             instance = new MovieRepository();
         }
         return instance;

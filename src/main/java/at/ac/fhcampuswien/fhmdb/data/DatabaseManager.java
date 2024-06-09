@@ -28,7 +28,7 @@ public class DatabaseManager {
         createTables();
     }
 
-    public static DatabaseManager getDatabaseManager() throws SQLException {
+    public static synchronized DatabaseManager getDatabaseManager() throws SQLException {
         if (instance == null) {
             instance = new DatabaseManager();
         }
@@ -38,7 +38,7 @@ public class DatabaseManager {
     private static void createConnectionSource() throws SQLException {
         conn = new JdbcConnectionSource(DB_URL, username, password);
     }
-    
+
     public ConnectionSource getConnectionSource() throws SQLException {
         if (conn == null) {
             createConnectionSource();

@@ -1,15 +1,15 @@
-package states;
+package at.ac.fhcampuswien.fhmdb.states;
 
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 
 import java.util.Comparator;
 import java.util.List;
 
-public class DescendingState implements State{
+public class AscendingState implements State {
     @Override
     public List<Movie> sortMovies(List<Movie> movies) {
         return movies.stream()
-                .sorted(Comparator.comparing(Movie::getTitle).reversed())
-                .toList();
+                     .sorted(Comparator.comparing(Movie::getTitle))
+                     .toList();
     }
 }
