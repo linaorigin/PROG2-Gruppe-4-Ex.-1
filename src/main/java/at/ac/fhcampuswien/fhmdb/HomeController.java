@@ -4,6 +4,7 @@ import at.ac.fhcampuswien.fhmdb.Observer.Observer;
 import at.ac.fhcampuswien.fhmdb.data.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.data.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.data.WatchListRepository;
+import at.ac.fhcampuswien.fhmdb.exceptions.DatabaseException;
 import at.ac.fhcampuswien.fhmdb.exceptions.MovieAPIException;
 import at.ac.fhcampuswien.fhmdb.models.Genres;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
@@ -24,9 +25,8 @@ import at.ac.fhcampuswien.fhmdb.states.DescendingState;
 import at.ac.fhcampuswien.fhmdb.states.State;
 import at.ac.fhcampuswien.fhmdb.states.UnsortedState;
 
-import java.io.IOException;
+
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Collectors;
@@ -77,16 +77,20 @@ public class HomeController implements Initializable, Observer {
             mRepo = MovieRepository.getInstance();
             wRepo = WatchListRepository.getInstance();
             wRepo.addObserver(this);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (DatabaseException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+            alert.showAndWait();
         }
         try {
             allMovies = Movie.initializeMovies();
         } catch (MovieAPIException e) {
             try {
                 allMovies = MovieEntity.toMovies(mRepo.getAllMovies());
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                alert.showAndWait();
             }
         }
 
@@ -163,9 +167,7 @@ public class HomeController implements Initializable, Observer {
             observableMovies.setAll(state.sortMovies(observableMovies));
         });
 
-        sceneBtn.setOnAction(actionEvent -> {
-            setScene();
-        });
+        sceneBtn.setOnAction(actionEvent -> setScene());
 
     }
 
@@ -189,8 +191,10 @@ public class HomeController implements Initializable, Observer {
             state = ascendingSortState;
             sortBtn.setText("Sort (asc)");
             observableMovies.setAll(state.sortMovies(m));
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (DatabaseException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+            alert.showAndWait();
         }
     }
 
@@ -204,8 +208,10 @@ public class HomeController implements Initializable, Observer {
                 wRepo.removeWatchList(((Movie) clickedItem).getId());
                 updateWatchListView();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (DatabaseException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+            alert.showAndWait();
         }
     };
 

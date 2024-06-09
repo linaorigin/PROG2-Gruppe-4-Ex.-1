@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb.data;
 
+import at.ac.fhcampuswien.fhmdb.exceptions.DatabaseException;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -21,14 +22,18 @@ public class DatabaseManager {
 
     private static DatabaseManager instance;
 
-    private DatabaseManager() throws SQLException {
-        createConnectionSource();
-        movieDao = DaoManager.createDao(conn, MovieEntity.class);
-        watchlistDao = DaoManager.createDao(conn, WatchlistMovieEntity.class);
-        createTables();
+    private DatabaseManager() throws DatabaseException {
+        try {
+            createConnectionSource();
+            movieDao = DaoManager.createDao(conn, MovieEntity.class);
+            watchlistDao = DaoManager.createDao(conn, WatchlistMovieEntity.class);
+            createTables();
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
-    public static synchronized DatabaseManager getDatabaseManager() throws SQLException {
+    public static synchronized DatabaseManager getDatabaseManager() throws DatabaseException {
         if (instance == null) {
             instance = new DatabaseManager();
         }
@@ -39,9 +44,14 @@ public class DatabaseManager {
         conn = new JdbcConnectionSource(DB_URL, username, password);
     }
 
-    public ConnectionSource getConnectionSource() throws SQLException {
+    public ConnectionSource getConnectionSource() throws DatabaseException {
         if (conn == null) {
-            createConnectionSource();
+            try {
+                createConnectionSource();
+                throw new SQLException("getConnectionSource");
+            } catch (SQLException e) {
+                throw new DatabaseException(e.getMessage());
+            }
         }
         return conn;
     }

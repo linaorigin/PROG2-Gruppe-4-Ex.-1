@@ -49,7 +49,7 @@ public class MovieAPI {
             movie = mapper.readValue(response.body()
                                              .string(), Movie.class);
         } catch (IOException e) {
-            throw new MovieAPIException("");
+            throw new MovieAPIException("MovieApi failed");
         }
         return movie;
     }

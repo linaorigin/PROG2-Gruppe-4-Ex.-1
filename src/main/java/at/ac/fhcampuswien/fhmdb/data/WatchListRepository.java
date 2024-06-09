@@ -2,6 +2,7 @@ package at.ac.fhcampuswien.fhmdb.data;
 
 import at.ac.fhcampuswien.fhmdb.Observer.Observable;
 import at.ac.fhcampuswien.fhmdb.Observer.Observer;
+import at.ac.fhcampuswien.fhmdb.exceptions.DatabaseException;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.table.TableUtils;
 
@@ -19,12 +20,13 @@ public class WatchListRepository implements Observable {
 
     private static WatchListRepository instance;
 
-    private WatchListRepository() throws SQLException {
+    private WatchListRepository() throws DatabaseException {
         this.dao = getDatabaseManager().getWatchlistDao();
         this.observers = new ArrayList<>();
     }
-    public static synchronized WatchListRepository getInstance()throws SQLException{
-        if (instance == null){
+
+    public static synchronized WatchListRepository getInstance() throws DatabaseException {
+        if (instance == null) {
             instance = new WatchListRepository();
         }
         return instance;
@@ -35,34 +37,50 @@ public class WatchListRepository implements Observable {
         this.observers = new ArrayList<>();
     }
 
-    public void addToWatchList(String ID) throws SQLException {
+    public void addToWatchList(String ID) throws DatabaseException {
         WatchlistMovieEntity newMovie = new WatchlistMovieEntity(ID);
-        if (dao.queryForEq("imdbId", newMovie.getImdbId())
-               .isEmpty()) {
-            dao.create(newMovie);
-            notifyObs("Movie" + ID + " was added to the watchlist.");
-        }else {
-            notifyObs("Movie" + ID + " is already in the watchlist.");
+        try {
+            if (dao.queryForEq("imdbId", newMovie.getImdbId())
+                   .isEmpty()) {
+                dao.create(newMovie);
+                notifyObs("Movie" + ID + " was added to the watchlist.");
+            } else {
+                notifyObs("Movie" + ID + " is already in the watchlist.");
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
         }
     }
 
-    public void removeWatchList(String ID) throws SQLException {
+    public void removeWatchList(String ID) throws DatabaseException {
         WatchlistMovieEntity newMovie = new WatchlistMovieEntity(ID);
-        if (!dao.queryForEq("imdbId", newMovie.getImdbId())
-                .isEmpty()) {
-            dao.delete(dao.queryForEq("imdbId", newMovie.getImdbId()));
-            notifyObs("Movie" + ID + "was removed from the watchlist.");
-        }else {
-            notifyObs("Movie" + ID + "is not in the watchlist.");
+        try {
+            if (!dao.queryForEq("imdbId", newMovie.getImdbId())
+                    .isEmpty()) {
+                dao.delete(dao.queryForEq("imdbId", newMovie.getImdbId()));
+                notifyObs("Movie" + ID + "was removed from the watchlist.");
+            } else {
+                notifyObs("Movie" + ID + "is not in the watchlist.");
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
         }
     }
 
-    public void removeAllWatchMovies() throws SQLException {
-        TableUtils.clearTable(getDatabaseManager().getConnectionSource(), WatchListRepository.class);
+    public void removeAllWatchMovies() throws DatabaseException {
+        try {
+            TableUtils.clearTable(getDatabaseManager().getConnectionSource(), WatchListRepository.class);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
-    public List<WatchlistMovieEntity> getAllWatchMovies() throws SQLException {
-        return dao.queryForAll();
+    public List<WatchlistMovieEntity> getAllWatchMovies() throws DatabaseException {
+        try {
+            return dao.queryForAll();
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     @Override
@@ -77,7 +95,7 @@ public class WatchListRepository implements Observable {
 
     @Override
     public void notifyObs(String message) {
-        for (Observer observer: observers){
+        for (Observer observer : observers) {
             observer.update(message);
         }
     }
