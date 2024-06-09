@@ -43,9 +43,9 @@ public class WatchListRepository implements Observable {
             if (dao.queryForEq("imdbId", newMovie.getImdbId())
                    .isEmpty()) {
                 dao.create(newMovie);
-                notifyObs("Movie" + ID + " was added to the watchlist.");
+                notifyObs("Movie was added to watchlist");
             } else {
-                notifyObs("Movie" + ID + " is already in the watchlist.");
+                notifyObs("Movie is already on watchlist");
             }
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
@@ -58,9 +58,7 @@ public class WatchListRepository implements Observable {
             if (!dao.queryForEq("imdbId", newMovie.getImdbId())
                     .isEmpty()) {
                 dao.delete(dao.queryForEq("imdbId", newMovie.getImdbId()));
-                notifyObs("Movie" + ID + "was removed from the watchlist.");
-            } else {
-                notifyObs("Movie" + ID + "is not in the watchlist.");
+                notifyObs("Moviewas removed from watchlist");
             }
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
