@@ -1,21 +1,27 @@
 package at.ac.fhcampuswien.fhmdb.data;
 
-import at.ac.fhcampuswien.fhmdb.models.Movie;
+import at.ac.fhcampuswien.fhmdb.Observer.Observable;
+import at.ac.fhcampuswien.fhmdb.Observer.Observer;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static at.ac.fhcampuswien.fhmdb.data.DatabaseManager.getDatabaseManager;
 
-public class WatchListRepository {
+public class WatchListRepository implements Observable {
+
     private final Dao<WatchlistMovieEntity, Long> dao;
+
+    private final List<Observer> observers;
 
     private static WatchListRepository instance;
 
     private WatchListRepository() throws SQLException {
         this.dao = getDatabaseManager().getWatchlistDao();
+        this.observers = new ArrayList<>();
     }
     public static synchronized WatchListRepository getInstance()throws SQLException{
         if (instance == null){
@@ -26,6 +32,7 @@ public class WatchListRepository {
 
     public WatchListRepository(Dao<WatchlistMovieEntity, Long> dao) {
         this.dao = dao;
+        this.observers = new ArrayList<>();
     }
 
     public void addToWatchList(String ID) throws SQLException {
@@ -33,6 +40,9 @@ public class WatchListRepository {
         if (dao.queryForEq("imdbId", newMovie.getImdbId())
                .isEmpty()) {
             dao.create(newMovie);
+            notifyObs("Movie" + ID + " was added to the watchlist.");
+        }else {
+            notifyObs("Movie" + ID + " is already in the watchlist.");
         }
     }
 
@@ -41,6 +51,9 @@ public class WatchListRepository {
         if (!dao.queryForEq("imdbId", newMovie.getImdbId())
                 .isEmpty()) {
             dao.delete(dao.queryForEq("imdbId", newMovie.getImdbId()));
+            notifyObs("Movie" + ID + "was removed from the watchlist.");
+        }else {
+            notifyObs("Movie" + ID + "is not in the watchlist.");
         }
     }
 
@@ -52,4 +65,20 @@ public class WatchListRepository {
         return dao.queryForAll();
     }
 
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObs(String message) {
+        for (Observer observer: observers){
+            observer.update(message);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.Observer.Observer;
 import at.ac.fhcampuswien.fhmdb.data.MovieEntity;
 import at.ac.fhcampuswien.fhmdb.data.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.data.WatchListRepository;
@@ -14,7 +15,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import states.AscendingState;
 import states.DescendingState;
@@ -28,7 +31,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
-public class HomeController implements Initializable {
+public class HomeController implements Initializable, Observer {
 
 
 
@@ -74,6 +77,7 @@ public class HomeController implements Initializable {
         try {
             mRepo = MovieRepository.getInstance();
             wRepo = WatchListRepository.getInstance();
+            wRepo.addObserver(this);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -196,7 +200,7 @@ public class HomeController implements Initializable {
                                   .toList();
             List<MovieEntity> me = mRepo.getMovies(a);
             List<Movie> m = MovieEntity.toMovies(me);
-            observableMovies.setAll(state.sortMovies(m));
+            observableMovies.setAll(m);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -301,5 +305,11 @@ public class HomeController implements Initializable {
         return movies.stream()
                      .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
                      .collect(Collectors.toList());
+    }
+
+    @Override
+    public void update(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        alert.showAndWait();
     }
 }
