@@ -12,8 +12,16 @@ import static at.ac.fhcampuswien.fhmdb.data.DatabaseManager.getDatabaseManager;
 public class WatchListRepository {
     private final Dao<WatchlistMovieEntity, Long> dao;
 
-    public WatchListRepository() throws SQLException {
+    private static WatchListRepository instance;
+
+    private WatchListRepository() throws SQLException {
         this.dao = getDatabaseManager().getWatchlistDao();
+    }
+    public static synchronized WatchListRepository getInstance()throws SQLException{
+        if (instance == null){
+            instance = new WatchListRepository();
+        }
+        return instance;
     }
 
     public WatchListRepository(Dao<WatchlistMovieEntity, Long> dao) {

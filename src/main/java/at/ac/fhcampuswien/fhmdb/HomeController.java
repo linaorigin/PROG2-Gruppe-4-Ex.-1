@@ -73,7 +73,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             mRepo = MovieRepository.getInstance();
-            wRepo = new WatchListRepository();
+            wRepo = WatchListRepository.getInstance();
         } catch (SQLException e) {
             e.printStackTrace();
         }
