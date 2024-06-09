@@ -231,7 +231,11 @@ public class HomeController implements Initializable {
                              Genres genre,
                              String releaseYear,
                              String rating) throws IOException {
-        return MovieAPI.getMovies(text, genre, releaseYear, rating);
+        try {
+            return MovieAPI.getMovies(text, genre, releaseYear, rating);
+        } catch (MovieAPIException ex) {
+            return filterLocalMovies(listToFilter, text, genre, Integer.parseInt(releaseYear), Float.parseFloat(rating));
+        }
     }
 
     // local filtering
