@@ -48,7 +48,6 @@ public class DatabaseManager {
         if (conn == null) {
             try {
                 createConnectionSource();
-                throw new SQLException("getConnectionSource");
             } catch (SQLException e) {
                 throw new DatabaseException(e.getMessage());
             }

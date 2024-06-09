@@ -29,7 +29,6 @@ public class FhmdbApplication extends Application {
         stage.show();
         try {
             DatabaseManager db = DatabaseManager.getDatabaseManager();
-            throw new DatabaseException("");
         } catch (DatabaseException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
             alert.showAndWait();
