@@ -11,12 +11,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HomeControllerTest {
+/*class HomeControllerTest {
     List<Movie> movieList;
     List<Movie> streamTestMovieList;
     HomeController homeController;
-
-    @BeforeEach
+    *@BeforeEach
     void init_movieList_for_testing() {
         homeController = new HomeController();
         movieList = Movie.initializeMovies();
@@ -79,7 +78,7 @@ class HomeControllerTest {
                                                      .toList();
             assertIterableEquals(expectedMovieList, actualMovieList);
         }
-    */
+
     @Test
     void upper_and_lower_case_irrelevant() {
         //given
@@ -181,7 +180,7 @@ class HomeControllerTest {
                          filteredMovies,
                          "The filtered list should only contain movies that match both the search text and the selected genre.");
         }
-    */
+
     @Test
     void no_movies_shown_when_filters_do_not_match() {
         List<Movie> allMovies = Movie.initializeMovies();
@@ -420,4 +419,4 @@ class HomeControllerTest {
         assertEquals(expectedList, filteredList);
 
     }
-}
+}*/

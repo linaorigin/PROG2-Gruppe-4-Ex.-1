@@ -15,6 +15,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import states.AscendingState;
+import states.DescendingState;
+import states.State;
+import states.UnsortedState;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +28,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
+
+
+
     @FXML
     public JFXButton searchBtn;
 
@@ -56,11 +63,15 @@ public class HomeController implements Initializable {
 
     private MovieRepository mRepo;
     private WatchListRepository wRepo;
+    private State state;
+    private final State ascendingSortState = new AscendingState();
+    private final State descendingSortState = new DescendingState();
+    private State unsortedSortState;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            mRepo = new MovieRepository();
+            mRepo = MovieRepository.getInstance();
             wRepo = new WatchListRepository();
             mRepo.addAllMoviesList(allMovies);
         } catch (SQLException e) {
@@ -69,9 +80,9 @@ public class HomeController implements Initializable {
 
         observableMovies.addAll(allMovies);
         // sort list as it instances unsorted
-        observableMovies.setAll(sortMovies(observableMovies,
-                                           sortBtn.getText()
-                                                  .equals("Sort (desc)")));
+        unsortedSortState = new UnsortedState(allMovies);
+        state = unsortedSortState;
+        sortBtn.setText("Sort (asc)");
 
 
         // initialize UI stuff
@@ -142,18 +153,23 @@ public class HomeController implements Initializable {
             observableMovies.setAll(sortMovies(observableMovies,
                                                sortBtn.getText()
                                                       .equals("Sort (desc)")));
+
+
         });
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if (sortBtn.getText()
-                       .equals("Sort (asc)")) {
-                sortBtn.setText("Sort (desc)");
-                observableMovies.setAll(sortMovies(observableMovies, true));
-            } else {
+            if(state instanceof UnsortedState){
+                state = ascendingSortState;
                 sortBtn.setText("Sort (asc)");
-                observableMovies.setAll(sortMovies(observableMovies, false));
+            }else if(state instanceof AscendingState){
+                state = descendingSortState;
+                sortBtn.setText("Sort (desc)");
+            }else {
+                state = unsortedSortState;
+                sortBtn.setText("Unsorted");
             }
+            observableMovies.setAll(state.sortMovies(observableMovies));
         });
 
         sceneBtn.setOnAction(actionEvent -> {
@@ -165,11 +181,8 @@ public class HomeController implements Initializable {
     private void setScene() {
         homeScene = !homeScene;
         if (homeScene) {
-            observableMovies.setAll(allMovies);
-            // sort list as it instances unsorted
-            observableMovies.setAll(sortMovies(observableMovies,
-                                               sortBtn.getText()
-                                                      .equals("Sort (desc)")));
+            observableMovies.setAll(state.sortMovies(allMovies));
+
         } else {
             updateWatchListView();
         }
@@ -183,7 +196,7 @@ public class HomeController implements Initializable {
                                   .toList();
             List<MovieEntity> me = mRepo.getMovies(a);
             List<Movie> m = MovieEntity.toMovies(me);
-            observableMovies.setAll(m);
+            observableMovies.setAll(state.sortMovies(m));
         } catch (SQLException e) {
             e.printStackTrace();
         }

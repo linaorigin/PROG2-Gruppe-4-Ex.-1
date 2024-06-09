@@ -15,8 +15,16 @@ import static at.ac.fhcampuswien.fhmdb.data.DatabaseManager.getDatabaseManager;
 public class MovieRepository {
     private final Dao<MovieEntity, Long> dao;
 
-    public MovieRepository() throws SQLException {
-        this.dao = getDatabaseManager().getMovieDao();
+    private static MovieRepository instance;
+
+    private MovieRepository() throws SQLException{
+        this.dao = getDatabaseManager().getMovieDao();;
+    }
+    public static synchronized MovieRepository getInstance() throws SQLException{
+        if (instance == null){
+            instance = new MovieRepository();
+        }
+        return instance;
     }
 
     public void addAllMoviesList(List<Movie> movies) throws SQLException {
