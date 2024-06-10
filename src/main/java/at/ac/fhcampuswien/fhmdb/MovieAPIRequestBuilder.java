@@ -1,16 +1,8 @@
 package at.ac.fhcampuswien.fhmdb;
 
-import at.ac.fhcampuswien.fhmdb.exceptions.MovieAPIException;
 import at.ac.fhcampuswien.fhmdb.models.Genres;
-import at.ac.fhcampuswien.fhmdb.models.Movie;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-
-import java.io.IOException;
-import java.util.List;
 
 public class MovieAPIRequestBuilder {
 

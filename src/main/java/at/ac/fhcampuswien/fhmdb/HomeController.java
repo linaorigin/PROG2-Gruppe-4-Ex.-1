@@ -149,21 +149,25 @@ public class HomeController implements Initializable, Observer {
                                                          ratingComboBox.getValue() :
                                                          null)
             ));
+            if (state instanceof UnsortedState) {
+                state = ascendingSortState;
+                sortBtn.setText("Sort (asc)");
+            }
             observableMovies.setAll(state.sortMovies(observableMovies));
         });
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if (state instanceof UnsortedState || (!homeScene && state instanceof DescendingState)) {
+            if (!(state instanceof AscendingState) /* UnsortedState || (!homeScene && state instanceof DescendingState) */) {
                 state = ascendingSortState;
                 sortBtn.setText("Sort (asc)");
-            } else if (state instanceof AscendingState) {
+            } else /* if (state instanceof AscendingState)*/ {
                 state = descendingSortState;
                 sortBtn.setText("Sort (desc)");
-            } else if (homeScene) {
+            }/* else if (homeScene) {
                 state = unsortedSortState;
                 sortBtn.setText("Unsorted");
-            }
+            }*/
             observableMovies.setAll(state.sortMovies(observableMovies));
         });
 
@@ -188,8 +192,10 @@ public class HomeController implements Initializable, Observer {
                                   .toList();
             List<MovieEntity> me = mRepo.getMovies(a);
             List<Movie> m = MovieEntity.toMovies(me);
-            state = ascendingSortState;
-            sortBtn.setText("Sort (asc)");
+            if (state instanceof UnsortedState) {
+                state = ascendingSortState;
+                sortBtn.setText("Sort (asc)");
+            }
             observableMovies.setAll(state.sortMovies(m));
         } catch (DatabaseException ex) {
             ex.printStackTrace();
