@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface State {
     List<Movie> sortMovies(List<Movie> movies);
+
+    State changeState();
 }

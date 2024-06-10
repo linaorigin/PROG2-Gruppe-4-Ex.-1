@@ -150,7 +150,7 @@ public class HomeController implements Initializable, Observer {
                                                          null)
             ));
             if (state instanceof UnsortedState) {
-                state = ascendingSortState;
+                state = state.changeState();
                 sortBtn.setText("Sort (asc)");
             }
             observableMovies.setAll(state.sortMovies(observableMovies));
@@ -158,16 +158,13 @@ public class HomeController implements Initializable, Observer {
 
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
-            if (!(state instanceof AscendingState) /* UnsortedState || (!homeScene && state instanceof DescendingState) */) {
-                state = ascendingSortState;
+            if (!(state instanceof AscendingState)) {
+                state = state.changeState();
                 sortBtn.setText("Sort (asc)");
-            } else /* if (state instanceof AscendingState)*/ {
-                state = descendingSortState;
+            } else {
+                state = state.changeState();
                 sortBtn.setText("Sort (desc)");
-            }/* else if (homeScene) {
-                state = unsortedSortState;
-                sortBtn.setText("Unsorted");
-            }*/
+            }
             observableMovies.setAll(state.sortMovies(observableMovies));
         });
 
@@ -193,7 +190,7 @@ public class HomeController implements Initializable, Observer {
             List<MovieEntity> me = mRepo.getMovies(a);
             List<Movie> m = MovieEntity.toMovies(me);
             if (state instanceof UnsortedState) {
-                state = ascendingSortState;
+                state = state.changeState();
                 sortBtn.setText("Sort (asc)");
             }
             observableMovies.setAll(state.sortMovies(m));

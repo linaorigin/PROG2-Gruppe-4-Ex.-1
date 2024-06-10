@@ -58,7 +58,7 @@ public class WatchListRepository implements Observable {
             if (!dao.queryForEq("imdbId", newMovie.getImdbId())
                     .isEmpty()) {
                 dao.delete(dao.queryForEq("imdbId", newMovie.getImdbId()));
-                notifyObs("Moviewas removed from watchlist");
+                notifyObs("Movie was removed from watchlist");
             }
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());

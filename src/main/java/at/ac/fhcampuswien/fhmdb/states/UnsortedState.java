@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb.states;
 
+import at.ac.fhcampuswien.fhmdb.Observer.Observable;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 
 import java.util.ArrayList;
@@ -15,5 +16,10 @@ public class UnsortedState implements State {
     @Override
     public List<Movie> sortMovies(List<Movie> movies) {
         return new ArrayList<>(ogOrder);
+    }
+
+    @Override
+    public State changeState() {
+        return new AscendingState();
     }
 }

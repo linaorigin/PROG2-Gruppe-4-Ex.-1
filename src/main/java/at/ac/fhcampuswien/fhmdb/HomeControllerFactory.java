@@ -9,25 +9,20 @@ import java.sql.SQLException;
 import static at.ac.fhcampuswien.fhmdb.data.DatabaseManager.getDatabaseManager;
 
 public class HomeControllerFactory implements Callback<Class<?>, Object> {
-    private HomeController homeControllerInstance;
+    private static HomeController homeControllerInstance;
 
     @Override
     public Object call(Class<?> aClass) {
         if (aClass == HomeController.class) {
             if (homeControllerInstance == null) {
                 try {
-                    homeControllerInstance = new HomeController();
+                    homeControllerInstance = (HomeController) aClass.getDeclaredConstructor()
+                                                                    .newInstance();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             return homeControllerInstance;
-        }
-        try {
-            return aClass.getDeclaredConstructor()
-                         .newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }

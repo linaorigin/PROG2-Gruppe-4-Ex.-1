@@ -12,4 +12,9 @@ public class AscendingState implements State {
                      .sorted(Comparator.comparing(Movie::getTitle))
                      .toList();
     }
+
+    @Override
+    public State changeState() {
+        return new DescendingState();
+    }
 }

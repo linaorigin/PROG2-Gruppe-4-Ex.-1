@@ -13,4 +13,11 @@ public class DescendingState implements State {
                                        .reversed())
                      .toList();
     }
+
+    @Override
+    public State changeState() {
+        return new AscendingState();
+    }
+
+
 }
